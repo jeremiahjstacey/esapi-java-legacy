@@ -47,6 +47,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
+import org.owasp.esapi.Authenticator;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.EncoderConstants;
 import org.owasp.esapi.Encryptor;
@@ -62,6 +63,8 @@ import org.owasp.esapi.errors.ConfigurationException;
 import org.owasp.esapi.errors.EncryptionException;
 import org.owasp.esapi.errors.IntegrityException;
 import org.owasp.esapi.reference.DefaultSecurityConfiguration;
+import org.owasp.esapi.reference.FileBasedAuthenticator;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * Reference implementation of the {@code Encryptor} interface. This implementation
@@ -79,20 +82,14 @@ import org.owasp.esapi.reference.DefaultSecurityConfiguration;
  * @see org.owasp.esapi.Encryptor
  */
 public final class JavaEncryptor implements Encryptor {
-    private static volatile Encryptor singletonInstance;
-
-    // Note: This double-check pattern only works because singletonInstance
-    //       is declared to be volatile.  Usually this method is called
-    //       via ESAPI.encryptor() rather than directly.
-    public static Encryptor getInstance() throws EncryptionException {
-        if ( singletonInstance == null ) {
-            synchronized ( JavaEncryptor.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new JavaEncryptor();
-                }
-            }
-        }
-        return singletonInstance;
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(FileBasedAuthenticator.class.getName(), String)} instead
+     */
+    @Deprecated
+    public static Encryptor getInstance() {
+        return ObjFactory.make(JavaEncryptor.class.getName(), "JavaEncryptor Singleton Reference");
     }
 
     private static boolean initialized = false;
@@ -228,11 +225,11 @@ public final class JavaEncryptor implements Encryptor {
 	
     
     /**
-     * Private CTOR for {@code JavaEncryptor}, called by {@code getInstance()}.
+     * Constructs a new class reference.
      * @throws EncryptionException if can't construct this object for some reason.
      * 					Original exception will be attached as the 'cause'.
      */
-    private JavaEncryptor() throws EncryptionException {
+    public JavaEncryptor() throws EncryptionException {
         byte[] salt = ESAPI.securityConfiguration().getMasterSalt();
         byte[] skey = ESAPI.securityConfiguration().getMasterKey();
 
