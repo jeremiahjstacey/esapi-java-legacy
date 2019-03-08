@@ -58,11 +58,11 @@ public class Log4JLogFactory implements LogFactory {
 	/**
      * Acquires the singleton reference to this type.
      * @return instance.
-     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     * @deprecated Use {@link ObjFactory#make(Log4JLogFactory.class.getName(), String)} instead
      */
     @Deprecated
     public static LogFactory getInstance() {
-        return ObjFactory.make(Log4JLogFactory.class.getName(), "Singleton Reference");
+        return ObjFactory.make(Log4JLogFactory.class.getName(), "Log4JLogFactory Singleton Reference");
     }
 	
 	protected Log4JLogFactory() {}

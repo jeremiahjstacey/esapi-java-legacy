@@ -66,7 +66,7 @@ public class DefaultEncoder implements Encoder {
      */
     @Deprecated
     public static Encoder getInstance() {
-       return ObjFactory.make(DefaultEncoder.class.getName(), "Singleton Reference");
+       return ObjFactory.make(DefaultEncoder.class.getName(), "DefaultEncoder Singleton Reference");
     }
 
 	// Codecs
