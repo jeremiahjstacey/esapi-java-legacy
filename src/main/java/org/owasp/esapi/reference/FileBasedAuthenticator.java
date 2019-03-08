@@ -17,6 +17,7 @@ package org.owasp.esapi.reference;
 
 import org.owasp.esapi.*;
 import org.owasp.esapi.errors.*;
+import org.owasp.esapi.util.ObjFactory;
 
 import java.io.*;
 import java.util.*;
@@ -53,18 +54,14 @@ import java.util.*;
  */
 public class FileBasedAuthenticator extends AbstractAuthenticator {
 
-    private static volatile Authenticator singletonInstance;
-
-    public static Authenticator getInstance()
-    {
-        if ( singletonInstance == null ) {
-            synchronized ( FileBasedAuthenticator.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new FileBasedAuthenticator();
-                }
-            }
-        }
-        return singletonInstance;
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(FileBasedAuthenticator.class.getName(), String)} instead
+     */
+    @Deprecated
+    public static Authenticator getInstance() {
+        return ObjFactory.make(FileBasedAuthenticator.class.getName(), "FileBasedAuthenticator Singleton Reference");
     }
 
     /**
@@ -230,7 +227,7 @@ public class FileBasedAuthenticator extends AbstractAuthenticator {
     /**
      *
      */
-    private FileBasedAuthenticator() {
+    public FileBasedAuthenticator() {
     	super();
     }
 
