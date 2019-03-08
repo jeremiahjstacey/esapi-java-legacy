@@ -99,7 +99,7 @@ public class DefaultEncoder implements Encoder {
 	/**
 	 * Instantiates a new DefaultEncoder
 	 */
-	private DefaultEncoder() {
+	public DefaultEncoder() {
 		codecs.add( htmlCodec );
 		codecs.add( percentCodec );
 		codecs.add( javaScriptCodec );

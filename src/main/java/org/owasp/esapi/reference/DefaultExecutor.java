@@ -64,7 +64,7 @@ public class DefaultExecutor implements org.owasp.esapi.Executor {
     /**
      * Instantiate a new Executor
      */
-    private DefaultExecutor() {
+    public DefaultExecutor() {
 		if ( System.getProperty("os.name").indexOf("Windows") != -1 ) {
 			logger.warning( Logger.SECURITY_SUCCESS, "Using WindowsCodec for Executor. If this is not running on Windows this could allow injection" );
 			codec = new WindowsCodec();

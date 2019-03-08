@@ -65,7 +65,7 @@ public class Log4JLogFactory implements LogFactory {
         return ObjFactory.make(Log4JLogFactory.class.getName(), "Log4JLogFactory Singleton Reference");
     }
 	
-	protected Log4JLogFactory() {}
+    public Log4JLogFactory() {}
 	
 	/**
 	* {@inheritDoc}
