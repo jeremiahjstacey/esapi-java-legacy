@@ -31,6 +31,7 @@ import org.owasp.esapi.codecs.Codec;
 import org.owasp.esapi.codecs.UnixCodec;
 import org.owasp.esapi.codecs.WindowsCodec;
 import org.owasp.esapi.errors.ExecutorException;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * Reference implementation of the Executor interface. This implementation is very restrictive. Commands must exactly
@@ -43,17 +44,15 @@ import org.owasp.esapi.errors.ExecutorException;
  * @see org.owasp.esapi.Executor
  */
 public class DefaultExecutor implements org.owasp.esapi.Executor {
-    private static volatile Executor singletonInstance;
 
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static Executor getInstance() {
-        if ( singletonInstance == null ) {
-            synchronized ( DefaultExecutor.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new DefaultExecutor();
-                }
-            }
-        }
-        return singletonInstance;
+        return ObjFactory.make(DefaultExecutor.class.getName(), "Singleton Reference");
     }
 
     /** The logger. */

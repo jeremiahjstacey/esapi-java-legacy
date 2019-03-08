@@ -44,6 +44,7 @@ import org.owasp.esapi.codecs.VBScriptCodec;
 import org.owasp.esapi.codecs.XMLEntityCodec;
 import org.owasp.esapi.errors.EncodingException;
 import org.owasp.esapi.errors.IntrusionException;
+import org.owasp.esapi.util.ObjFactory;
 
 
 /**
@@ -58,17 +59,14 @@ import org.owasp.esapi.errors.IntrusionException;
  */
 public class DefaultEncoder implements Encoder {
 
-    private static volatile Encoder singletonInstance;
-
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static Encoder getInstance() {
-        if ( singletonInstance == null ) {
-            synchronized ( DefaultEncoder.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new DefaultEncoder();
-                }
-            }
-        }
-        return singletonInstance;
+       return ObjFactory.make(DefaultEncoder.class.getName(), "Singleton Reference");
     }
 
 	// Codecs

@@ -38,6 +38,7 @@ import org.owasp.esapi.Logger;
 import org.owasp.esapi.SecurityConfiguration;
 import org.owasp.esapi.configuration.EsapiPropertyManager;
 import org.owasp.esapi.errors.ConfigurationException;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * The reference {@code SecurityConfiguration} manages all the settings used by the ESAPI in a single place. In this reference
@@ -69,17 +70,15 @@ import org.owasp.esapi.errors.ConfigurationException;
  */
 
 public class DefaultSecurityConfiguration implements SecurityConfiguration {
-    private static volatile SecurityConfiguration instance = null;
 
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static SecurityConfiguration getInstance() {
-        if ( instance == null ) {
-            synchronized (DefaultSecurityConfiguration.class) {
-                if ( instance == null ) {
-                    instance = new DefaultSecurityConfiguration();
-                }
-            }
-        }
-        return instance;
+        return ObjFactory.make(DefaultSecurityConfiguration.class.getName(), "Singleton Reference");
     }
     
     private Properties properties = null;

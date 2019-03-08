@@ -15,14 +15,10 @@
  */
 package org.owasp.esapi.reference;
 
-import java.util.HashMap;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.spi.LoggerFactory;
-
-import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.LogFactory;
-import org.owasp.esapi.Logger;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * Reference implementation of the LogFactory interface. This implementation uses the Apache Log4J package, and marks each
@@ -56,20 +52,17 @@ import org.owasp.esapi.Logger;
  */
 public class Log4JLogFactory implements LogFactory {
 
-	private static volatile LogFactory singletonInstance;
-
 	//The Log4j logger factory to use
 	LoggerFactory factory = new Log4JLoggerFactory();
 
+	/**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static LogFactory getInstance() {
-        if ( singletonInstance == null ) {
-            synchronized ( Log4JLogFactory.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new Log4JLogFactory();
-                }
-            }
-        }
-        return singletonInstance;
+        return ObjFactory.make(Log4JLogFactory.class.getName(), "Singleton Reference");
     }
 	
 	protected Log4JLogFactory() {}

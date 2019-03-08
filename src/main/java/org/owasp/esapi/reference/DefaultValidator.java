@@ -51,6 +51,7 @@ import org.owasp.esapi.reference.validation.HTMLValidationRule;
 import org.owasp.esapi.reference.validation.IntegerValidationRule;
 import org.owasp.esapi.reference.validation.NumberValidationRule;
 import org.owasp.esapi.reference.validation.StringValidationRule;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * Reference implementation of the Validator interface. This implementation
@@ -67,17 +68,15 @@ import org.owasp.esapi.reference.validation.StringValidationRule;
  */
 public class DefaultValidator implements org.owasp.esapi.Validator {
 	private static Logger logger = ESAPI.log();
-    private static volatile Validator instance = null;
 
+	/**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static Validator getInstance() {
-        if ( instance == null ) {
-            synchronized ( Validator.class ) {
-                if ( instance == null ) {
-                    instance = new DefaultValidator();
-                }
-            }
-        }
-        return instance;
+        return ObjFactory.make(DefaultValidator.class.getName(), "Singleton Reference");
     }
 
 	/** A map of validation rules */

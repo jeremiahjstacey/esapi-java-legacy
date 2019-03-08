@@ -2,6 +2,7 @@ package org.owasp.esapi.reference;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.LogFactory;
 import org.owasp.esapi.Logger;
 import org.owasp.esapi.User;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * Reference implementation of the LogFactory and Logger interfaces. This implementation uses the Java logging package, and marks each
@@ -24,17 +26,15 @@ import org.owasp.esapi.User;
  * @see org.owasp.esapi.reference.JavaLogFactory.JavaLogger
  */
 public class JavaLogFactory implements LogFactory {
-	private static volatile LogFactory singletonInstance;
 
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static LogFactory getInstance() {
-        if ( singletonInstance == null ) {
-            synchronized ( JavaLogFactory.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new JavaLogFactory();
-                }
-            }
-        }
-        return singletonInstance;
+        return ObjFactory.make(JavaLogFactory.class.getName(), "Singleton Reference");
     }
 
 	private HashMap<Serializable, Logger> loggersMap = new HashMap<Serializable, Logger>();

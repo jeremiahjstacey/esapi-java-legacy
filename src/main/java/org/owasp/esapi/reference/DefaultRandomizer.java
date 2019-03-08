@@ -24,6 +24,7 @@ import org.owasp.esapi.EncoderConstants;
 import org.owasp.esapi.Logger;
 import org.owasp.esapi.Randomizer;
 import org.owasp.esapi.errors.EncryptionException;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * Reference implementation of the Randomizer interface. This implementation builds on the JCE provider to provide a
@@ -34,17 +35,15 @@ import org.owasp.esapi.errors.EncryptionException;
  * @see org.owasp.esapi.Randomizer
  */
 public class DefaultRandomizer implements org.owasp.esapi.Randomizer {
-    private static volatile Randomizer singletonInstance;
 
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static Randomizer getInstance() {
-        if ( singletonInstance == null ) {
-            synchronized ( DefaultRandomizer.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new DefaultRandomizer();
-                }
-            }
-        }
-        return singletonInstance;
+        return ObjFactory.make(DefaultRandomizer.class.getName(), "Singleton Reference");
     }
 
     /** The sr. */

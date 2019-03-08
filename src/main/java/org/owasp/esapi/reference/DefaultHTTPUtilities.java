@@ -56,6 +56,7 @@ import org.owasp.esapi.errors.IntegrityException;
 import org.owasp.esapi.errors.IntrusionException;
 import org.owasp.esapi.errors.ValidationException;
 import org.owasp.esapi.errors.ValidationUploadException;
+import org.owasp.esapi.util.ObjFactory;
 
 /**
  * Reference implementation of the HTTPUtilities interface. This implementation
@@ -80,21 +81,19 @@ import org.owasp.esapi.errors.ValidationUploadException;
  * @see org.owasp.esapi.HTTPUtilities
  */
 public class DefaultHTTPUtilities implements org.owasp.esapi.HTTPUtilities {
-    private static volatile HTTPUtilities instance = null;
 
     // Apache Commons FileUpload property for enabling / disabling Java deserialization via file uploads.
     // ESAPI will save current value, set it to "false", and then restore value before returning. GitHub issue #417.
     private static String DISKFILEITEM_SERIALIZABLE = "org.apache.commons.fileupload.disk.DiskFileItem.serializable";
 
+    /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultEncoder.class.getName(), String)} instead
+     */
+    @Deprecated
     public static HTTPUtilities getInstance() {
-        if ( instance == null ) {
-            synchronized ( DefaultHTTPUtilities.class ) {
-                if ( instance == null ) {
-                    instance = new DefaultHTTPUtilities();
-                }
-            }
-        }
-        return instance;
+        return ObjFactory.make(HTTPUtilities.class.getName(), "Singleton Reference");
     }
 
 	/**
