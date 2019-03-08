@@ -37,6 +37,7 @@ import org.owasp.esapi.codecs.UnixCodec;
 import org.owasp.esapi.codecs.WindowsCodec;
 import org.owasp.esapi.errors.EncodingException;
 import org.owasp.esapi.errors.IntrusionException;
+import org.owasp.esapi.util.ObjFactory;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -826,7 +827,7 @@ public class EncoderTest extends TestCase {
 		}
 		
 	    public String javaScriptEncode(String str) {
-			Encoder encoder = DefaultEncoder.getInstance();
+			Encoder encoder = ObjFactory.make(DefaultEncoder.class.getName(), "EncoderTest");
 			return encoder.encodeForJavaScript(str);
 		}
     }
