@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.AccessController;
 import org.owasp.esapi.errors.AccessControlException;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.owasp.esapi.reference.accesscontrol.AlwaysFalseACR;
 import org.owasp.esapi.reference.accesscontrol.AlwaysTrueACR;
 import org.owasp.esapi.reference.accesscontrol.ExperimentalAccessController;
@@ -21,7 +23,8 @@ import org.owasp.esapi.reference.accesscontrol.ExperimentalAccessController;
 public class AccessControllerTest {
 	
 	protected AccessController accessController;
-		
+	 @Rule
+	    public MultithreadRule multiThreader = new MultithreadRule();
 	@Before
 	public void setup() {
 		Map accessControlRules = new HashMap(3);

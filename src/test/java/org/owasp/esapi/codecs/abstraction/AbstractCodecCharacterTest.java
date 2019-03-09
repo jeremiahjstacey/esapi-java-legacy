@@ -18,11 +18,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.owasp.esapi.codecs.Codec;
 import org.owasp.esapi.codecs.PushbackString;
+import org.owasp.esapi.reference.MultithreadRule;
 
 
 /**
@@ -35,7 +37,8 @@ import org.owasp.esapi.codecs.PushbackString;
  */
 @RunWith(Parameterized.class)
 public abstract class AbstractCodecCharacterTest {
-    
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     /** Test Data Tuple.*/
     protected static class CodecCharacterTestTuple {
         /** Codec reference to be tested.*/

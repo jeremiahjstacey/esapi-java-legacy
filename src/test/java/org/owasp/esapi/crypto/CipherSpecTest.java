@@ -14,14 +14,17 @@ import javax.crypto.Cipher;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.codecs.Hex;
 import org.owasp.esapi.crypto.CipherSpec;
+import org.owasp.esapi.reference.MultithreadRule;
 
 /** JUnit test to test CipherSpec class. */
 public class CipherSpecTest extends TestCase {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
 	private Cipher dfltAESCipher = null;
 	private Cipher dfltECBCipher = null;	// will be "AES/ECB/NoPadding";
 	private Cipher dfltOtherCipher = null;

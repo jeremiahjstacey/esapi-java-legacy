@@ -6,10 +6,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.AccessController;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.errors.AccessControlException;
+import org.owasp.esapi.reference.MultithreadRule;
 /**
  * Answers the question: Is the policy file being loaded properly?
  * @author Mike H. Fauzy
@@ -17,7 +19,8 @@ import org.owasp.esapi.errors.AccessControlException;
 public class ACRPolicyFileLoaderTest {
 
 	protected AccessController accessController;
-
+	 @Rule
+	    public MultithreadRule multiThreader = new MultithreadRule();
 	@Before
 	public void setUp() throws Exception {
 		accessController = ESAPI.accessController();

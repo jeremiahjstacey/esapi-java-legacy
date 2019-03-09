@@ -17,8 +17,10 @@ package org.owasp.esapi.codecs.percent;
 import static org.junit.Assert.assertEquals;
 import static org.owasp.esapi.codecs.percent.PercentCodecStringTest.PERCENT_CODEC_IMMUNE;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.codecs.PercentCodec;
+import org.owasp.esapi.reference.MultithreadRule;
 /**
  * This test class holds the proof of known deficiencies, inconsistencies, or bugs with the PercentCodec implementation.
  * <br/>
@@ -26,7 +28,8 @@ import org.owasp.esapi.codecs.PercentCodec;
  * the author to move the test to an appropriate Test file and update the functionality to a working expectation.
  */
 public class PercentCodecKnownIssuesTest {
-    
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private PercentCodec codec = new PercentCodec();
 
     /**

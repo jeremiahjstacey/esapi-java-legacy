@@ -5,13 +5,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.powermock.reflect.Whitebox;
 
 
 public class AbstractAccessReferenceMapTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Test
     public void testConcurrentAddDirectReference() throws Exception {
         @SuppressWarnings("unchecked")

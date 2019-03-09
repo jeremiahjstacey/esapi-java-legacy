@@ -15,10 +15,14 @@
 package org.owasp.esapi.logging.cleaning;
 
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Rule;
 import org.junit.Test;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class NewlineLogScrubberTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private NewlineLogScrubber scrubber = new NewlineLogScrubber();
 
     @Test

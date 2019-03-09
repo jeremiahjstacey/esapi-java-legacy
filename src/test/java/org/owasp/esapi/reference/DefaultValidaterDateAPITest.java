@@ -44,6 +44,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest(DefaultValidator.class)
 public class DefaultValidaterDateAPITest {
     @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
+    @Rule
     public ExpectedException exEx = ExpectedException.none();
     @Rule
     public TestName testName = new TestName();

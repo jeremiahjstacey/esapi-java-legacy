@@ -17,9 +17,11 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.regex.Pattern;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.owasp.esapi.reference.MultithreadRule;
 
 /**
  * Abstract parameterized test case meant to assist with verifying regular expressions in test scope.
@@ -31,7 +33,8 @@ import org.junit.runners.Parameterized;
  */
 @RunWith(Parameterized.class)
 public abstract class AbstractPatternTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     /**
      * Test tuple for Pattern validation.
      */

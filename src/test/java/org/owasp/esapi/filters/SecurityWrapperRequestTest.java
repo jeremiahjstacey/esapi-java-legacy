@@ -38,6 +38,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.SecurityConfiguration;
 import org.owasp.esapi.Validator;
 import org.owasp.esapi.errors.ValidationException;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -63,7 +64,8 @@ public class SecurityWrapperRequestTest {
 
     private static final String QUERY_STRING_CANONCALIZE_TYPE_KEY = "HTTPQueryString";
     private static final String PARAMETER_STRING_CANONCALIZE_TYPE_KEY = "HTTPParameterValue";
-  
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public TestName testName = new TestName();
 

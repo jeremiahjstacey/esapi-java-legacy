@@ -9,9 +9,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.errors.EncryptionException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 /**
  * Test for class {@code SecurityProviderLoader}. Note that these tests
@@ -30,7 +32,8 @@ import org.owasp.esapi.errors.EncryptionException;
  * @author kevin.w.wall@gmail.com
  */
 public class SecurityProviderLoaderTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private static boolean HAS_BOUNCY_CASTLE = false;
     
     @BeforeClass

@@ -16,10 +16,12 @@ package org.owasp.esapi.codecs.abstraction;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.owasp.esapi.codecs.Codec;
+import org.owasp.esapi.reference.MultithreadRule;
 
 
 /**
@@ -32,7 +34,8 @@ import org.owasp.esapi.codecs.Codec;
  */
 @RunWith(Parameterized.class)
 public abstract class AbstractCodecStringTest {
-   
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     protected static class CodecStringTestTuple {
         /** Codec reference to be tested.*/
         public Codec codec;

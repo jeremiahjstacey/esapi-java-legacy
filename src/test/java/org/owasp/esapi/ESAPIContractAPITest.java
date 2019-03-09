@@ -2,12 +2,14 @@ package org.owasp.esapi;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.owasp.esapi.util.ObjFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -17,7 +19,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ObjFactory.class})
 public class ESAPIContractAPITest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Mock
     private SecurityConfiguration mockSecConfig;
     

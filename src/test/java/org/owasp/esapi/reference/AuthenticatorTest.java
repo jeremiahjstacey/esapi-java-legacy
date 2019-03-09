@@ -59,6 +59,8 @@ import org.owasp.esapi.http.MockHttpServletResponse;
  * @author Jeff Williams (jeff.williams@aspectsecurity.com)
  */
 public class AuthenticatorTest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private static Authenticator instance;
     /** 
      * User session information is stored on a per-thread basis.  So long as this has potential to run single threaded then we'll maintain a synchronous nature execution.

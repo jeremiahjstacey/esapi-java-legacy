@@ -2,15 +2,18 @@ package org.owasp.esapi.reference.validation;
 
 import junit.framework.Assert;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.owasp.esapi.Encoder;
 import org.owasp.esapi.ValidationErrorList;
 import org.owasp.esapi.errors.ValidationException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class StringValidationRuleTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
 	@Test
 	public void testWhitelistPattern() throws ValidationException {
 		

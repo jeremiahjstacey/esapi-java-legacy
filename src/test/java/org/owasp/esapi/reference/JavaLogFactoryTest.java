@@ -8,13 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.Logger;
-import org.owasp.esapi.util.ObjFactory;
 
 
 public class JavaLogFactoryTest {
-    private JavaLogFactory factory = ObjFactory.make(JavaLogFactory.class.getName(), "JavaLogFactoryTest");
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Test
     public void testConcurrentLogRequest() throws InterruptedException {
         final ConcurrentHashMap<Integer, Logger> logCapture = new ConcurrentHashMap<>();
@@ -31,7 +32,7 @@ public class JavaLogFactoryTest {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                   logCapture.put(requestIndex, factory.getLogger(JavaLogFactoryTest.class));
+                   logCapture.put(requestIndex, JavaLogFactory.getInstance().getLogger(JavaLogFactoryTest.class));
                 }
             };
             
@@ -44,7 +45,7 @@ public class JavaLogFactoryTest {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
-                   logCapture.put(requestIndex, factory.getLogger(JavaLogFactoryTest.class.getName()));
+                   logCapture.put(requestIndex, JavaLogFactory.getInstance().getLogger(JavaLogFactoryTest.class.getName()));
                 }
             };
             

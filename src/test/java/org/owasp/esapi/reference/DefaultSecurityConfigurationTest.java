@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import java.util.regex.Pattern;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Logger;
@@ -17,7 +18,8 @@ import org.owasp.esapi.errors.ConfigurationException;
 import org.owasp.esapi.reference.DefaultSecurityConfiguration.DefaultSearchPath;
 
 public class DefaultSecurityConfigurationTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
 	private DefaultSecurityConfiguration createWithProperty(String key, String val) {
 		java.util.Properties properties = new java.util.Properties();
 		properties.setProperty(key, val);

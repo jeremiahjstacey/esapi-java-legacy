@@ -23,11 +23,13 @@ import org.owasp.esapi.Encoder;
 import org.owasp.esapi.ValidationErrorList;
 import org.owasp.esapi.errors.ValidationException;
 import org.owasp.esapi.reference.DefaultSecurityConfiguration;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.powermock.reflect.Whitebox;
 
 
 public class DateValidationRuleTest {
-    
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public ExpectedException exEx = ExpectedException.none();
     @Rule

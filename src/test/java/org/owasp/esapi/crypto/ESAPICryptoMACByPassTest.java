@@ -28,6 +28,7 @@ import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.crypto.CipherText;
 import org.owasp.esapi.crypto.PlainText;
 import org.owasp.esapi.errors.EncryptionException;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.owasp.esapi.util.ByteConversionUtil;
 
 import javax.crypto.SecretKey;
@@ -41,11 +42,13 @@ import java.util.Date;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 
 public class ESAPICryptoMACByPassTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Before
     public void setUp() throws NoSuchAlgorithmException, InvalidKeySpecException {
     	; // Do any prerequisite setup here.

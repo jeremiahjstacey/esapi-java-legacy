@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Random;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import javax.crypto.SecretKey;
@@ -12,9 +13,11 @@ import junit.framework.JUnit4TestAdapter;
 
 import org.owasp.esapi.crypto.CryptoHelper;
 import org.owasp.esapi.errors.EncryptionException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class CryptoHelperTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Test
     public final void testGenerateSecretKeySunnyDay() {
         try {

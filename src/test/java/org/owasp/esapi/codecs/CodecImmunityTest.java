@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -13,6 +14,7 @@ import org.junit.runners.Parameterized.Parameters;
 import org.owasp.esapi.EncoderConstants;
 import org.owasp.esapi.StringUtilities;
 import org.owasp.esapi.codecs.*;
+import org.owasp.esapi.reference.MultithreadRule;
 
 /**
  * Parameterized test to verify that the Immunity parameter for a codec
@@ -24,6 +26,8 @@ import org.owasp.esapi.codecs.*;
  */
 @RunWith(Parameterized.class)
 public class CodecImmunityTest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     /** character arrays used as immunity lists from Default Encoder.*/
     private final static char[] IMMUNE_HTML = { ',', '.', '-', '_', ' ' };
     private final static char[] IMMUNE_HTMLATTR = { ',', '.', '-', '_' };

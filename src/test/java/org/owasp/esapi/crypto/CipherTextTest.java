@@ -16,13 +16,15 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.errors.EncryptionException;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.owasp.esapi.reference.crypto.CryptoPolicy;
 
 import junit.framework.Assert;
 import junit.framework.JUnit4TestAdapter;
 
 public class CipherTextTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
 	private CipherSpec cipherSpec_ = null;
     private Cipher encryptor = null;
     private Cipher decryptor = null;

@@ -29,10 +29,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.owasp.esapi.Logger;
 import org.owasp.esapi.logging.cleaning.LogScrubber;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.slf4j.Marker;
 
 public class Slf4JLogBridgeImplTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public TestName testName = new TestName();
     @Rule

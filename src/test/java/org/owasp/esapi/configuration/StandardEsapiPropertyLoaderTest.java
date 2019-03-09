@@ -2,10 +2,12 @@ package org.owasp.esapi.configuration;
 
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.configuration.consts.EsapiConfiguration;
 import org.owasp.esapi.errors.ConfigurationException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +15,8 @@ import java.io.IOException;
 import static junit.framework.Assert.*;
 
 public class StandardEsapiPropertyLoaderTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private static String filename;
     private static int priority;
 

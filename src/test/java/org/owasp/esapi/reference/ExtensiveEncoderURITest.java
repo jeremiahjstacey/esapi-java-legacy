@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -19,6 +20,8 @@ import org.owasp.esapi.Validator;
 
 @RunWith(Parameterized.class)
 public class ExtensiveEncoderURITest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
 	static List<String> inputs = new ArrayList<String>();
 	Validator v = ESAPI.validator();
 	String uri;

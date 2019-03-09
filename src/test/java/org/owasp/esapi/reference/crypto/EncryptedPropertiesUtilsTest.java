@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.rules.TestName;
+import org.owasp.esapi.reference.MultithreadRule;
 
 
 /**
@@ -47,7 +48,8 @@ public class EncryptedPropertiesUtilsTest {
 	private static final String KEY4	= "sally sue";
 	private static final String VALUE4	= "betty mae";
 
-	
+	 @Rule
+	    public MultithreadRule multiThreader = new MultithreadRule();
 	/** Rule to acquire the running test's information at runtime.*/
 	@Rule
 	public TestName testName = new TestName();

@@ -11,17 +11,20 @@ import java.util.Collection;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.owasp.esapi.http.MockHttpServletResponse;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.owasp.esapi.util.TestUtils;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 //@PrepareForTest({SecurityWrapperResponse.class})
 @RunWith(PowerMockRunner.class)
 public class SecurityWrapperResponseTest {
-	
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
 	@Test
 	public void testAddHeader(){
 		HttpServletResponse servResp = mock(HttpServletResponse.class);

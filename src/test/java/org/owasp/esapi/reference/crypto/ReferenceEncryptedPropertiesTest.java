@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.owasp.esapi.errors.EncryptionException;
 import org.owasp.esapi.errors.EncryptionRuntimeException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 /**
  * The Class EncryptedPropertiesTest.
@@ -37,7 +38,8 @@ import org.owasp.esapi.errors.EncryptionRuntimeException;
  * @since October 8, 2010
  */
 public class ReferenceEncryptedPropertiesTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 	

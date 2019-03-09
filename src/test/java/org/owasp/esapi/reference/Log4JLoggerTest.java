@@ -15,13 +15,22 @@
  */
 package org.owasp.esapi.reference;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Arrays;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.WriterAppender;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Logger;
 import org.owasp.esapi.errors.AuthenticationException;
@@ -29,17 +38,16 @@ import org.owasp.esapi.errors.ValidationException;
 import org.owasp.esapi.http.MockHttpServletRequest;
 import org.owasp.esapi.http.MockHttpServletResponse;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Arrays;
-
 /**
  * The Class LoggerTest.
  * 
  * @author Jeff Williams (jeff.williams@aspectsecurity.com)
  * @author August Detlefsen (augustd at codemagi dot com) <a href="http://www.codemagi.com">CodeMagi, Inc.</a>
  */
-public class Log4JLoggerTest extends TestCase {
+public class Log4JLoggerTest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
+    
 	private static int testCount = 0;
 	
 	private static Logger testLogger = null;
@@ -47,20 +55,13 @@ public class Log4JLoggerTest extends TestCase {
 	//a logger for explicit tests of log4j logging methods
 	private static Log4JLogger log4JLogger = null;
 
-    /**
-	 * Instantiates a new logger test.
-	 * 
-	 * @param testName the test name
-	 */
-    public Log4JLoggerTest(String testName) {
-        super(testName);
-    }
-
+    
     /**
      * {@inheritDoc}
      * @throws Exception
      */
-    protected void setUp() throws Exception {
+	@Before
+    public void setUp() throws Exception {
 		//override default log configuration in ESAPI.properties to use Log4JLogFactory
         UnitTestSecurityConfiguration tmpConfig = new UnitTestSecurityConfiguration((DefaultSecurityConfiguration) ESAPI.securityConfiguration());
         tmpConfig.setLogImplementation( Log4JLogFactory.class.getName() );
@@ -80,7 +81,8 @@ public class Log4JLoggerTest extends TestCase {
      * {@inheritDoc}
      * @throws Exception
      */
-    protected void tearDown() throws Exception {
+	@After
+    public void tearDown() throws Exception {
     	//this helps, with garbage collection
     	testLogger = null;
 		log4JLogger = null;
@@ -88,15 +90,7 @@ public class Log4JLoggerTest extends TestCase {
 		ESAPI.override(null);
 	}
 
-    /**
-	 * Suite.
-	 * 
-	 * @return the test
-	 */
-    public static Test suite() {
-        TestSuite suite = new TestSuite(Log4JLoggerTest.class);    
-        return suite;
-    }
+   
     
     /**
      * Test of logHTTPRequest method, of class org.owasp.esapi.Logger.
@@ -108,6 +102,7 @@ public class Log4JLoggerTest extends TestCase {
      * @throws AuthenticationException
      *             the authentication exception
      */
+	@Test
     public void testLogHTTPRequest() throws ValidationException, IOException, AuthenticationException {
         System.out.println("logHTTPRequest");
         String[] ignore = {"password","ssn","ccn"};
@@ -128,6 +123,7 @@ public class Log4JLoggerTest extends TestCase {
      * Test of setLevel method of the inner class org.owasp.esapi.reference.JavaLogger that is defined in 
      * org.owasp.esapi.reference.JavaLogFactory.
      */
+	@Test
     public void testSetLevel() {
         System.out.println("setLevel");
         
@@ -224,6 +220,7 @@ public class Log4JLoggerTest extends TestCase {
 	 * test of loggers without setting explicit log levels
 	 * (log levels set from log4j.xml configuration)
 	 */
+	@Test
 	public void testLogLevels() {
 
 		Logger traceLogger			= ESAPI.getLogger("org.owasp.esapi.reference.TestTrace");
@@ -296,6 +293,7 @@ public class Log4JLoggerTest extends TestCase {
 	 * test of loggers without setting explicit log levels
 	 * (log levels set from log4j.xml configuration)
 	 */
+	@Test
 	public void testLogLevelsWithClass() {
 
 		Logger traceLogger			= ESAPI.getLogger(TestTrace.class);
@@ -366,6 +364,7 @@ public class Log4JLoggerTest extends TestCase {
     /**
 	 * Test of info method, of class org.owasp.esapi.Logger.
 	 */
+	@Test
     public void testInfo() {
         System.out.println("info");
         testLogger.info(Logger.SECURITY_SUCCESS, "test message" );
@@ -387,6 +386,7 @@ public class Log4JLoggerTest extends TestCase {
     /**
 	 * Test of trace method, of class org.owasp.esapi.Logger.
 	 */
+	@Test
     public void testTrace() {
         System.out.println("trace");
         testLogger.trace(Logger.SECURITY_SUCCESS, "test message trace" );
@@ -399,6 +399,7 @@ public class Log4JLoggerTest extends TestCase {
     /**
 	 * Test of debug method, of class org.owasp.esapi.Logger.
 	 */
+	@Test
     public void testDebug() {
         System.out.println("debug");
         testLogger.debug(Logger.SECURITY_SUCCESS, "test message debug" );
@@ -411,6 +412,7 @@ public class Log4JLoggerTest extends TestCase {
     /**
 	 * Test of error method, of class org.owasp.esapi.Logger.
 	 */
+	@Test
     public void testError() {
         System.out.println("error");
         testLogger.error(Logger.SECURITY_SUCCESS, "test message error" );
@@ -423,6 +425,7 @@ public class Log4JLoggerTest extends TestCase {
     /**
 	 * Test of warning method, of class org.owasp.esapi.Logger.
 	 */
+	@Test
     public void testWarning() {
         System.out.println("warning");
         testLogger.warning(Logger.SECURITY_SUCCESS, "test message warning" );
@@ -435,6 +438,7 @@ public class Log4JLoggerTest extends TestCase {
     /**
 	 * Test of fatal method, of class org.owasp.esapi.Logger.
 	 */
+	@Test
     public void testFatal() {
         System.out.println("fatal");
         testLogger.fatal(Logger.SECURITY_SUCCESS, "test message fatal" );
@@ -447,6 +451,7 @@ public class Log4JLoggerTest extends TestCase {
     /**
      * Test of always method, of class org.owasp.esapi.Logger.
      */
+	@Test
     public void testAlways() {
         System.out.println("always");
         testLogger.always(Logger.SECURITY_SUCCESS, "test message always 1 (SECURITY_SUCCESS)" );
@@ -468,6 +473,7 @@ public class Log4JLoggerTest extends TestCase {
 	 * Validation for issue: https://code.google.com/p/owasp-esapi-java/issues/detail?id=268
 	 * Line number must be the line of the caller and not of the wrapper.
 	 */
+	@Test
 	public void testLine() {
 		final String message = "testing only";
 		StringWriter sw = new StringWriter();

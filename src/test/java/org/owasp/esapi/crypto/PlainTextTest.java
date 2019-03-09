@@ -6,11 +6,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 import junit.framework.JUnit4TestAdapter;
+
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.crypto.PlainText;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class PlainTextTest {
-	
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
 	private String unicodeStr = "A\u00ea\u00f1\u00fcC";	// I.e., "AêñüC"
 	private String altString  = "AêñüC";				// Same as above.
 	

@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.owasp.esapi.Encoder;
 import org.owasp.esapi.SecurityConfiguration;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.owasp.esapi.util.ObjFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -23,7 +24,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ObjFactory.class})
 public class DateValidationRulePowerMockTest {
-    
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public TestName testName = new TestName();
     private Encoder mockEncoder;

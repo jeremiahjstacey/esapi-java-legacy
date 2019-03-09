@@ -44,6 +44,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({DefaultValidator.class, ESAPI.class})
 public class DefaultValidatorInputStringAPITest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private static final String ESAPY_SECURITY_CONFIGURATION_GETTER_METHOD_NAME = "securityConfiguration";
     private static final Pattern TEST_PATTERN = Pattern.compile("");
     @Rule

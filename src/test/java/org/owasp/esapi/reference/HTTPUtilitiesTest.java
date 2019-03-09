@@ -14,6 +14,12 @@
  * @created 2007
  */
 package org.owasp.esapi.reference;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +35,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.owasp.esapi.Authenticator;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.EncoderConstants;
@@ -46,57 +55,19 @@ import org.owasp.esapi.http.MockHttpServletResponse;
 import org.owasp.esapi.http.MockHttpSession;
 import org.owasp.esapi.util.FileTestUtils;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 /**
  * The Class HTTPUtilitiesTest.
  * 
  * @author Jeff Williams (jeff.williams@aspectsecurity.com)
  */
-public class HTTPUtilitiesTest extends TestCase
+public class HTTPUtilitiesTest
 {
 	private static final Class<HTTPUtilitiesTest> CLASS = HTTPUtilitiesTest.class;
 	private static final String CLASS_NAME = CLASS.getName();
-
-	/**
-	 * Suite.
-	 * 
-	 * @return the test
-	 */
-	public static Test suite() {
-		return new TestSuite(HTTPUtilitiesTest.class);
-	}
-
-	/**
-	 * Instantiates a new HTTP utilities test.
-	 * 
-	 * @param testName the test name
-	 */
-	public HTTPUtilitiesTest(String testName) {
-		super(testName);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @throws Exception
-	 */
-	protected void setUp() throws Exception {
-		// none
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * @throws Exception
-	 */
-	protected void tearDown() throws Exception {
-		// none
-	}
-
+	 @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
+	
+	@Test 
 	public void testCSRFToken() throws Exception {
 		System.out.println( "CSRFToken");
 		String username = ESAPI.randomizer().getRandomString(8, EncoderConstants.CHAR_ALPHANUMERICS);
@@ -119,7 +90,7 @@ public class HTTPUtilitiesTest extends TestCase
 	 * Test of addCSRFToken method, of class org.owasp.esapi.HTTPUtilities.
 	 * @throws AuthenticationException 
 	 */
-	public void testAddCSRFToken() throws AuthenticationException {
+	@Test public void testAddCSRFToken() throws AuthenticationException {
 		Authenticator instance = ESAPI.authenticator();
 		String username = ESAPI.randomizer().getRandomString(8, EncoderConstants.CHAR_ALPHANUMERICS);
 		User user = instance.createUser(username, "addCSRFToken", "addCSRFToken");
@@ -139,7 +110,7 @@ public class HTTPUtilitiesTest extends TestCase
 	/**
 	 * Test of assertSecureRequest method, of class org.owasp.esapi.HTTPUtilities.
 	 */
-	public void testAssertSecureRequest() {
+	@Test public void testAssertSecureRequest() {
 		System.out.println("assertSecureRequest");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		try {
@@ -185,7 +156,7 @@ public class HTTPUtilitiesTest extends TestCase
 	 * 
 	 * @throws EnterpriseSecurityException
 	 */
-	public void testChangeSessionIdentifier() throws EnterpriseSecurityException {
+	@Test public void testChangeSessionIdentifier() throws EnterpriseSecurityException {
 		System.out.println("changeSessionIdentifier");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -205,7 +176,7 @@ public class HTTPUtilitiesTest extends TestCase
 	 * Test of formatHttpRequestForLog method, of class org.owasp.esapi.HTTPUtilities.
 	 * @throws IOException 
 	 */
-	public void testGetFileUploads() throws IOException {
+	@Test public void testGetFileUploads() throws IOException {
 		File home = null;
 
 		try
@@ -277,7 +248,7 @@ public class HTTPUtilitiesTest extends TestCase
 	/**
 	 * Test of killAllCookies method, of class org.owasp.esapi.HTTPUtilities.
 	 */
-	public void testKillAllCookies() {
+	@Test public void testKillAllCookies() {
 		System.out.println("killAllCookies");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -294,7 +265,7 @@ public class HTTPUtilitiesTest extends TestCase
 	/**
 	 * Test of killCookie method, of class org.owasp.esapi.HTTPUtilities.
 	 */
-	public void testKillCookie() {
+	@Test public void testKillCookie() {
 		System.out.println("killCookie");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -315,7 +286,7 @@ public class HTTPUtilitiesTest extends TestCase
 	 * @throws ValidationException the validation exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public void testSendSafeRedirect() throws Exception {
+	@Test public void testSendSafeRedirect() throws Exception {
 		System.out.println("sendSafeRedirect");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		try {
@@ -344,7 +315,7 @@ public class HTTPUtilitiesTest extends TestCase
 	/**
 	 * Test of setCookie method, of class org.owasp.esapi.HTTPUtilities.
 	 */
-	public void testSetCookie() {
+	@Test public void testSetCookie() {
 		System.out.println("setCookie");
 		HTTPUtilities instance = ESAPI.httpUtilities(); 
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -373,7 +344,7 @@ public class HTTPUtilitiesTest extends TestCase
 	 *
 	 * @throws java.lang.Exception
 	 */
-	public void testGetStateFromEncryptedCookie() throws Exception {
+	@Test public void testGetStateFromEncryptedCookie() throws Exception {
 		System.out.println("getStateFromEncryptedCookie");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -409,7 +380,7 @@ public class HTTPUtilitiesTest extends TestCase
 	/**
 	 *
 	 */
-	public void testSaveStateInEncryptedCookie() {
+	@Test public void testSaveStateInEncryptedCookie() {
 		System.out.println("saveStateInEncryptedCookie");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -435,7 +406,7 @@ public class HTTPUtilitiesTest extends TestCase
 	/**
 	 *
 	 */
-	public void testSaveTooLongStateInEncryptedCookieException() {
+	@Test public void testSaveTooLongStateInEncryptedCookieException() {
 		System.out.println("saveTooLongStateInEncryptedCookie");
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
@@ -458,7 +429,7 @@ public class HTTPUtilitiesTest extends TestCase
 	/**
 	 * Test set no cache headers.
 	 */
-	public void testSetNoCacheHeaders() {
+	@Test public void testSetNoCacheHeaders() {
 		System.out.println("setNoCacheHeaders");
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -477,7 +448,7 @@ public class HTTPUtilitiesTest extends TestCase
 	 *
 	 * @throws org.owasp.esapi.errors.AuthenticationException
 	 */
-	public void testDeprecatedSetRememberToken() throws AuthenticationException {
+	@Test public void testDeprecatedSetRememberToken() throws AuthenticationException {
 		System.out.println("setRememberToken");
 		Authenticator instance = (Authenticator)ESAPI.authenticator();
 		String accountName=ESAPI.randomizer().getRandomString(8, EncoderConstants.CHAR_ALPHANUMERICS);
@@ -502,7 +473,7 @@ public class HTTPUtilitiesTest extends TestCase
 	 *
 	 * @throws org.owasp.esapi.errors.AuthenticationException
 	 */
-	public void testSetRememberToken() throws Exception {
+	@Test public void testSetRememberToken() throws Exception {
 		System.out.println("setRememberToken");
 		Authenticator instance = (Authenticator)ESAPI.authenticator();
 		String accountName=ESAPI.randomizer().getRandomString(8, EncoderConstants.CHAR_ALPHANUMERICS);
@@ -533,7 +504,7 @@ public class HTTPUtilitiesTest extends TestCase
 		assertEquals(HTTPUtilities.REMEMBER_TOKEN_COOKIE_NAME, cookie.getName());
 	}
 
-	public void testGetSessionAttribute() throws Exception {
+	@Test public void testGetSessionAttribute() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest();
 		HttpSession session = request.getSession();
 		session.setAttribute("testAttribute", 43f);
@@ -544,10 +515,10 @@ public class HTTPUtilitiesTest extends TestCase
 		} catch ( ClassCastException cce ) {}
 
 		Float test2 = ESAPI.httpUtilities().getSessionAttribute( session, "testAttribute" );
-		assertEquals( test2, 43f );
+		assertEquals( test2, 43f, .001 );
 	}
 
-	public void testGetRequestAttribute() throws Exception {
+	@Test public void testGetRequestAttribute() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute( "testAttribute", 43f );
 		try {
@@ -556,7 +527,7 @@ public class HTTPUtilitiesTest extends TestCase
 		} catch ( ClassCastException cce ) {}
 
 		Float test2 = ESAPI.httpUtilities().getRequestAttribute( request, "testAttribute" );
-		assertEquals( test2, 43f );
+		assertEquals( test2, 43f, .001 );
 	}
 }
 

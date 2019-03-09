@@ -25,12 +25,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TestName;
 import org.owasp.esapi.errors.ValidationException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 
 /**
  * @author Jeff Williams (jeff.williams@aspectsecurity.com)
  */
 public class ValidationErrorListTest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public ExpectedException exEx = ExpectedException.none();
     @Rule

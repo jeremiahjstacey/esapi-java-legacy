@@ -2,11 +2,14 @@ package org.owasp.esapi.codecs;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class HTMLEntityCodecTest {
 	Codec<Integer> codec = new HTMLEntityCodec();
-	
+	 @Rule
+	    public MultithreadRule multiThreader = new MultithreadRule();
 	@Test
 	public void testEntityDecoding(){
 		assertEquals("<", codec.decode("&lt;"));

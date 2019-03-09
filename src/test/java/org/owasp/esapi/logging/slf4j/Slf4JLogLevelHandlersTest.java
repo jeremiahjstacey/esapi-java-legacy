@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.mockito.Mockito;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
 import org.slf4j.helpers.BasicMarkerFactory;
@@ -27,7 +28,8 @@ public class Slf4JLogLevelHandlersTest {
     private Logger mockLogger = Mockito.mock(Logger.class);
     @Rule
     public TestName testName = new TestName();
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private Marker marker = new BasicMarkerFactory().getMarker(Slf4JLogLevelHandlersTest.class.getSimpleName());
     private Throwable testException = new Throwable("Expected for testing");
 

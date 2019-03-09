@@ -1,14 +1,19 @@
 package org.owasp.esapi.util;
 
 import static org.junit.Assert.*;
+
+import org.junit.Rule;
+
 import junit.framework.JUnit4TestAdapter;
 
 import org.junit.Test;
 import org.owasp.esapi.codecs.Hex;
+import org.owasp.esapi.reference.MultithreadRule;
 
 /** JUnit test for {@code ByteConversionUtil}. */
 public class ByteConversionUtilTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private static final String EOL = System.getProperty("line.separator", "\n");
     private static final boolean VERBOSE = false;
 

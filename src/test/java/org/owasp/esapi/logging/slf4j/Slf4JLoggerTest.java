@@ -16,9 +16,11 @@
 package org.owasp.esapi.logging.slf4j;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.owasp.esapi.Logger;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class Slf4JLoggerTest {
     
@@ -29,7 +31,8 @@ public class Slf4JLoggerTest {
     
     private Throwable testEx = new Throwable(MSG + "_Exception");
     private Logger testLogger = new Slf4JLogger(mockLogDelegate, mockBridge, Logger.ALL);
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Test
     public void testLevelEnablement() {
         testLogger.setLevel(Logger.INFO);

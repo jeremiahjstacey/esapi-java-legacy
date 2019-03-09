@@ -23,8 +23,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.owasp.esapi.codecs.Codec;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class CodecLogScrubberTest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public ExpectedException exEx = ExpectedException.none();
 

@@ -40,6 +40,7 @@ import org.junit.rules.ExpectedException;
 import org.owasp.esapi.Encoder;
 import org.owasp.esapi.ValidationErrorList;
 import org.owasp.esapi.errors.ValidationException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class BaseValidationRuleTest {
     /**Static Test Data.*/
@@ -47,7 +48,8 @@ public class BaseValidationRuleTest {
     private static final String EX_MSG="Expected Failure Message from " + BaseValidationRuleTest.class.getSimpleName();
     @Rule
     public ExpectedException exEx = ExpectedException.none();
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private ValidationException testValidationEx = new ValidationException(EX_MSG, EX_MSG);
 
     private BaseValidationRule uit = mock(BaseValidationRule.class, CALLS_REAL_METHODS);

@@ -17,6 +17,7 @@ package org.owasp.esapi.logging.slf4j;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -25,6 +26,7 @@ import org.owasp.esapi.logging.cleaning.CodecLogScrubber;
 import org.owasp.esapi.logging.cleaning.CompositeLogScrubber;
 import org.owasp.esapi.logging.cleaning.LogScrubber;
 import org.owasp.esapi.logging.cleaning.NewlineLogScrubber;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -32,6 +34,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest (Slf4JLogFactory.class)
 public class Slf4JLogFactoryTest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Test
     public void testCreateLoggerByString() {
         Logger logger = new Slf4JLogFactory().getLogger("test");

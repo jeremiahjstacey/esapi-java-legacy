@@ -13,6 +13,7 @@ import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.owasp.esapi.codecs.MySQLCodec.Mode;
+import org.owasp.esapi.reference.MultithreadRule;
 import org.powermock.reflect.Whitebox;
 /**
  * Tests to show {@link MySQLCodec} with {@link Mode#ANSI}
@@ -22,6 +23,8 @@ import org.powermock.reflect.Whitebox;
  *
  */
 public class MySQLCodecTest {
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private static final char[] EMPTY_CHAR_ARRAY = new char[0];
     private static  Map<Character, String> ANSI_ESCAPES;
     private static  Map<Character, String> STANDARD_ESCAPES;

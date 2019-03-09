@@ -23,9 +23,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class CompositeLogScrubberTest {
-
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     @Rule
     public ExpectedException exEx = ExpectedException.none();
 

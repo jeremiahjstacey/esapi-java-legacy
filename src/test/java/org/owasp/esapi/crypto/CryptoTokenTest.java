@@ -10,12 +10,15 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.owasp.esapi.errors.EncryptionException;
 import org.owasp.esapi.errors.ValidationException;
+import org.owasp.esapi.reference.MultithreadRule;
 
 public class CryptoTokenTest {
-    
+    @Rule
+    public MultithreadRule multiThreader = new MultithreadRule();
     private SecretKey skey1 = null;
     private SecretKey skey2 = null;
 
