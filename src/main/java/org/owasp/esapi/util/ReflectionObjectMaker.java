@@ -24,7 +24,20 @@ public class ReflectionObjectMaker implements ObjMaker{
             String errMsg = null;
             errMsg = ex.toString() + " " + typeName + " class (" + className + ") must have a public, no-arg constructor.";
             throw new ConfigurationException(errMsg, ex);
-        } 
+        } catch (Exception ex) {
+            String errMsg = null;
+            // Because we are using reflection, we want to catch any checked or unchecked Exceptions and
+            // re-throw them in a way we can handle them. Because using reflection to construct the object,
+            // we can't have the compiler notify us of uncaught exceptions. For example, JavaEncryptor()
+            // CTOR can throw [well, now it can] an EncryptionException if something goes wrong. That case
+            // is taken care of here.
+            //
+            // CHECKME: Should we first catch RuntimeExceptions so we just let unchecked Exceptions go through
+            //          unaltered???
+            //
+            errMsg = ex.toString() + " " + typeName + " class (" + className + ") CTOR threw exception.";
+            throw new ConfigurationException(errMsg, ex);
+        }
     }
 
 }
