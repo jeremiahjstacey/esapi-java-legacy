@@ -5,30 +5,29 @@ import java.util.Map;
 import org.owasp.esapi.AccessControlRule;
 import org.owasp.esapi.AccessController;
 import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.Encryptor;
 import org.owasp.esapi.Logger;
 import org.owasp.esapi.errors.AccessControlException;
 import org.owasp.esapi.reference.accesscontrol.policyloader.ACRPolicyFileLoader;
 import org.owasp.esapi.reference.accesscontrol.policyloader.PolicyDTO;
+import org.owasp.esapi.reference.crypto.JavaEncryptor;
+import org.owasp.esapi.util.ObjFactory;
 
 public class DefaultAccessController implements AccessController {
 	private Map ruleMap;
-
-    private static volatile AccessController singletonInstance = null;
-
-    public static AccessController getInstance() throws AccessControlException {
-        if ( singletonInstance == null ) {
-            synchronized ( DefaultAccessController.class ) {
-                if ( singletonInstance == null ) {
-                    singletonInstance = new DefaultAccessController();
-                }
-            }
-        }
-        return singletonInstance;
+	 /**
+     * Acquires the singleton reference to this type.
+     * @return instance.
+     * @deprecated Use {@link ObjFactory#make(DefaultAccessController.class.getName(), String)} instead
+     */
+    @Deprecated
+    public static AccessController getInstance() {
+        return ObjFactory.make(DefaultAccessController.class.getName(), "DefaultAccessController Singleton Reference");
     }
 
 	protected final Logger logger = ESAPI.getLogger("DefaultAccessController");
 
-	private DefaultAccessController() throws AccessControlException {
+	public DefaultAccessController() throws AccessControlException {
 		ACRPolicyFileLoader policyDescriptor = new ACRPolicyFileLoader();
 		PolicyDTO policyDTO = policyDescriptor.load();		
 		ruleMap = policyDTO.getAccessControlRules();
