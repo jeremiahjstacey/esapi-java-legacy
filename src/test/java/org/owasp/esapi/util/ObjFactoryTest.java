@@ -144,7 +144,7 @@ public class ObjFactoryTest extends TestCase {
     		assertFalse("Should not be reached - not a subclass", obj != null);
     	} catch(ConfigurationException ex) {
     		Throwable cause = ex.getCause();
-    		assertTrue( cause instanceof IllegalArgumentException);
+    		assertTrue( cause instanceof ClassNotFoundException);
     	}
     }
     
