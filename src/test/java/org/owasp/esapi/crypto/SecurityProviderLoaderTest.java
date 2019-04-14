@@ -1,13 +1,14 @@
 package org.owasp.esapi.crypto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.security.NoSuchProviderException;
 import java.security.Provider;
+import java.security.Security;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.owasp.esapi.ESAPI;
@@ -32,6 +33,22 @@ import org.owasp.esapi.errors.EncryptionException;
 public class SecurityProviderLoaderTest {
 
     private static boolean HAS_BOUNCY_CASTLE = false;
+    private static Provider[] DEFAULT_PROVIDERS;
+    
+    @BeforeClass
+    public static void captureSecurityProviders() throws Exception {
+        DEFAULT_PROVIDERS = Security.getProviders();
+    }
+    
+    @AfterClass
+    public static void restoreSecurityProviders() throws Exception {
+        for (int index = 0 ; index < DEFAULT_PROVIDERS.length ; index ++ ) {
+            Provider prov = DEFAULT_PROVIDERS[index];
+            //It appears that a provider needs to be removed before the index can be updated.
+            Security.removeProvider(prov.getName());
+            Security.insertProviderAt(prov, index +1);
+        }
+    }
     
     @BeforeClass
     public static void setUpBeforeClass() {
