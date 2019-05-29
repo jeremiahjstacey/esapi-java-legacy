@@ -55,7 +55,7 @@ public class ObjFactory {
         }
 
         public static ObjMaker getSystemObjMaker() {
-            String sysProp = System.getProperty("ObjFactory.MAKER", ALWAYS_NEW.name());
+            String sysProp = System.getProperty("ObjFactory.MAKER", CACHING.name());
             //Logger
             ObjFactoryMode mode = ObjFactoryMode.valueOf(sysProp.toUpperCase()); 
             return mode.getMaker();
