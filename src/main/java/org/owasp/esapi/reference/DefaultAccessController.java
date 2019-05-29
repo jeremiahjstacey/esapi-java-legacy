@@ -95,6 +95,7 @@ public class DefaultAccessController implements AccessController {
      * {@inheritDoc}
 	 * @deprecated
 	 */
+    @Deprecated
 	public void assertAuthorizedForFile(String filepath)
 			throws AccessControlException {
 		this.assertAuthorized("AC 1.0 File", new Object[] {filepath});

@@ -198,14 +198,16 @@ public class HTTPUtilitiesTest
 			request2.setContentType( "multipart/form-data; boundary=ridiculous");
 			ESAPI.httpUtilities().setCurrentHTTP(request2, response);
 			try {
-				List list = ESAPI.httpUtilities().getFileUploads(request2, home);
-				Iterator i = list.iterator();
+				List<?> list = ESAPI.httpUtilities().getFileUploads(request2, home);
+				Iterator<?> i = list.iterator();
 				while ( i.hasNext() ) {
 					File f = (File)i.next();
 					System.out.println( "  " + f.getAbsolutePath() );
 				}
 				assertTrue( list.size() > 0 );
 			} catch (ValidationException e) {
+				System.out.println("ERROR in testGetFileUploads() request2: " + e.toString());
+				e.printStackTrace();
 				fail();
 			}
 
@@ -214,15 +216,17 @@ public class HTTPUtilitiesTest
 			ESAPI.httpUtilities().setCurrentHTTP(request4, response);
 			System.err.println("UPLOAD DIRECTORY: " + ESAPI.securityConfiguration().getUploadDirectory());
 			try {
-				List list = ESAPI.httpUtilities().getFileUploads(request4, home);
-				Iterator i = list.iterator();
+				List<?> list = ESAPI.httpUtilities().getFileUploads(request4, home);
+				Iterator<?> i = list.iterator();
 				while ( i.hasNext() ) {
 					File f = (File)i.next();
 					System.out.println( "  " + f.getAbsolutePath() );
 				}
 				assertTrue( list.size() > 0 );
 			} catch (ValidationException e) {
-				System.err.println("ERROR: " + e.toString());
+				// TODO: This test cases if failing when we upgrade to commons-fileupload;commons-fileupload:1.4 because of a duplicate file error. Need to figure out why.
+				System.out.println("ERROR in testGetFileUploads() request4: " + e.toString());
+				e.printStackTrace();
 				fail();
 			}
 
@@ -253,7 +257,7 @@ public class HTTPUtilitiesTest
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		assertTrue(response.getCookies().isEmpty());
-		ArrayList list = new ArrayList();
+		ArrayList<Cookie> list = new ArrayList<Cookie>();
 		list.add(new Cookie("test1", "1"));
 		list.add(new Cookie("test2", "2"));
 		list.add(new Cookie("test3", "3"));
@@ -271,7 +275,7 @@ public class HTTPUtilitiesTest
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		ESAPI.httpUtilities().setCurrentHTTP(request, response);
 		assertTrue(response.getCookies().isEmpty());
-		ArrayList list = new ArrayList();
+		ArrayList<Cookie> list = new ArrayList<Cookie>();
 		list.add(new Cookie("test1", "1"));
 		list.add(new Cookie("test2", "2"));
 		list.add(new Cookie("test3", "3"));
@@ -350,10 +354,10 @@ public class HTTPUtilitiesTest
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		// test null cookie array
-		Map empty = ESAPI.httpUtilities().decryptStateFromCookie(request);
+		Map<String, String> empty = ESAPI.httpUtilities().decryptStateFromCookie(request);
 		assertTrue( empty.isEmpty() );
 
-		HashMap map = new HashMap();
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put( "one", "aspect" );
 		map.put( "two", "ridiculous" );
 		map.put( "test_hard", "&(@#*!^|;,." );
@@ -362,10 +366,10 @@ public class HTTPUtilitiesTest
 			String value = response.getHeader( "Set-Cookie" );
 			String encrypted = value.substring(value.indexOf("=")+1, value.indexOf(";"));
 			request.setCookie( DefaultHTTPUtilities.ESAPI_STATE, encrypted );
-			Map state = ESAPI.httpUtilities().decryptStateFromCookie(request);
-			Iterator i = map.entrySet().iterator();
+			Map<String, String> state = ESAPI.httpUtilities().decryptStateFromCookie(request);
+			Iterator<?> i = map.entrySet().iterator();
 			while ( i.hasNext() ) {
-				Map.Entry entry = (Map.Entry)i.next();
+				Map.Entry<?, ?> entry = (Map.Entry<?, ?>)i.next();
 				String origname = (String)entry.getKey();
 				String origvalue = (String)entry.getValue();
 				if( !state.get( origname ).equals( origvalue ) ) {
@@ -385,7 +389,7 @@ public class HTTPUtilitiesTest
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		ESAPI.httpUtilities().setCurrentHTTP(request, response);
-		HashMap map = new HashMap();
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put( "one", "aspect" );
 		map.put( "two", "ridiculous" );
 		map.put( "test_hard", "&(@#*!^|;,." );
@@ -415,7 +419,7 @@ public class HTTPUtilitiesTest
 
 		String foo = ESAPI.randomizer().getRandomString(4096, EncoderConstants.CHAR_ALPHANUMERICS);
 
-		HashMap map = new HashMap();
+		HashMap<String, String> map = new HashMap<String, String>();
 		map.put("long", foo);
 		try {
 			ESAPI.httpUtilities().encryptStateInCookie(response, map);
@@ -448,9 +452,10 @@ public class HTTPUtilitiesTest
 	 *
 	 * @throws org.owasp.esapi.errors.AuthenticationException
 	 */
-	@Test public void testDeprecatedSetRememberToken() throws AuthenticationException {
+	@SuppressWarnings("deprecation")
+	public void testDeprecatedSetRememberToken() throws AuthenticationException {
 		System.out.println("setRememberToken");
-		Authenticator instance = (Authenticator)ESAPI.authenticator();
+		Authenticator instance = ESAPI.authenticator();
 		String accountName=ESAPI.randomizer().getRandomString(8, EncoderConstants.CHAR_ALPHANUMERICS);
 		String password = instance.generateStrongPassword();
 		User user = instance.createUser(accountName, password, password);
@@ -473,9 +478,9 @@ public class HTTPUtilitiesTest
 	 *
 	 * @throws org.owasp.esapi.errors.AuthenticationException
 	 */
-	@Test public void testSetRememberToken() throws Exception {
-		System.out.println("setRememberToken");
-		Authenticator instance = (Authenticator)ESAPI.authenticator();
+	public void testSetRememberToken() throws Exception {
+		//System.out.println("setRememberToken");
+		Authenticator instance = ESAPI.authenticator();
 		String accountName=ESAPI.randomizer().getRandomString(8, EncoderConstants.CHAR_ALPHANUMERICS);
 		String password = instance.generateStrongPassword();
 		User user = instance.createUser(accountName, password, password);
@@ -493,6 +498,7 @@ public class HTTPUtilitiesTest
 		
 		Field field = response.getClass().getDeclaredField("cookies");
 		field.setAccessible(true);
+		@SuppressWarnings("unchecked")
 		List<Cookie> cookies = (List<Cookie>) field.get(response);
 		Cookie cookie = null;
 		for(Cookie c: cookies){
@@ -510,6 +516,8 @@ public class HTTPUtilitiesTest
 		session.setAttribute("testAttribute", 43f);
 
 		try {
+			// Deleting the unused assignment of the results to test1 causes the expected ClassCastException to not occur. So don't delete it!
+			@SuppressWarnings("unused")
 			Integer test1 = ESAPI.httpUtilities().getSessionAttribute( session, "testAttribute" );
 			fail();
 		} catch ( ClassCastException cce ) {}
@@ -522,6 +530,8 @@ public class HTTPUtilitiesTest
 		HttpServletRequest request = new MockHttpServletRequest();
 		request.setAttribute( "testAttribute", 43f );
 		try {
+			// Deleting the unused assignment of the results to test1 causes the expected ClassCastException to not occur. So don't delete it!
+			@SuppressWarnings("unused")
 			Integer test1 = ESAPI.httpUtilities().getRequestAttribute( request, "testAttribute" );
 			fail();
 		} catch ( ClassCastException cce ) {}

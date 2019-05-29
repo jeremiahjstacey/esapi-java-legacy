@@ -43,48 +43,43 @@ public class ObjFactory {
     static enum ObjFactoryMode {
         CACHING (new CachingObjMakerDecorator(new ReflectionObjectMaker())),
         ALWAYS_NEW ( new ReflectionObjectMaker());
-        
+
         private ObjMaker maker;
-        
+
         private ObjFactoryMode(ObjMaker makerRef) {
             this.maker = makerRef;
         }
-        
+
         public  ObjMaker getMaker() {
             return maker;
         }
-    
+
         public static ObjMaker getSystemObjMaker() {
             String sysProp = System.getProperty("ObjFactory.MAKER", ALWAYS_NEW.name());
             //Logger
             ObjFactoryMode mode = ObjFactoryMode.valueOf(sysProp.toUpperCase()); 
             return mode.getMaker();
         }
-        
+
     }
 
     private static final ObjMaker maker = ObjFactoryMode.getSystemObjMaker();
-    
-	/**
-	 * Create an object based on the <code>className</code> parameter.
-	 * 
-	 * @param className	The name of the class to construct. Should be a fully qualified name and
-	 * 					generally the same as type <code>T</code>
-	 * @param typeName	A type name used in error messages / exceptions.
-	 * @return	An object of type <code>className</code>, which is cast to type <code>T</code>.
-	 * @throws	ConfigurationException thrown if class name not found in class path, or does not
-	 * 			have a public, no-argument constructor, or is not a concrete class, or if it is
-	 * 			not a sub-type of <code>T</code> (or <code>T</code> itself). Usually this is
-	 * 			caused by a misconfiguration of the class names specified in the ESAPI.properties
-	 * 			file. Also thrown if the CTOR of the specified <code>className</code> throws
-	 * 			an <code>Exception</code> of some type.
-	 */
-	public static <T> T make(String className, String typeName) throws ConfigurationException {
-		return maker.make(className, typeName);
-	}
-	
-	/**
-	 * Not instantiable
-	 */
-	private ObjFactory() { }
+
+    /**
+     * Create an object based on the <code>className</code> parameter.
+     * 
+     * @param className	The name of the class to construct. Should be a fully qualified name and
+     * 					generally the same as type <code>T</code>
+     * @param typeName	A type name used in error messages / exceptions.
+     * @return	An object of type <code>className</code>, which is cast to type <code>T</code>.
+     * @throws	ConfigurationException thrown if class name not found in class path, or does not
+     * 			have a public, no-argument constructor, or is not a concrete class, or if it is
+     * 			not a sub-type of <code>T</code> (or <code>T</code> itself). Usually this is
+     * 			caused by a misconfiguration of the class names specified in the ESAPI.properties
+     * 			file. Also thrown if the CTOR of the specified <code>className</code> throws
+     * 			an <code>Exception</code> of some type.
+     */
+    public static <T> T make(String className, String typeName) throws ConfigurationException {
+        return maker.make(className, typeName);
+    }
 }
