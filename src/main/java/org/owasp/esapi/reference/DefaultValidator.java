@@ -72,7 +72,7 @@ public class DefaultValidator implements org.owasp.esapi.Validator {
 	/**
      * Acquires the singleton reference to this type.
      * @return instance.
-     * @deprecated Use {@link ObjFactory#make(DefaultValidator.class.getName(), String)} instead
+     * @deprecated Use {@link ObjFactory#make(String, String)} instead
      */
     @Deprecated
     public static Validator getInstance() {

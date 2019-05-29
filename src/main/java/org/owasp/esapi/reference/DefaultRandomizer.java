@@ -39,7 +39,7 @@ public class DefaultRandomizer implements org.owasp.esapi.Randomizer {
     /**
      * Acquires the singleton reference to this type.
      * @return instance.
-     * @deprecated Use {@link ObjFactory#make(DefaultRandomizer.class.getName(), String)} instead
+     * @deprecated Use {@link ObjFactory#make(String, String)} instead
      */
     @Deprecated
     public static Randomizer getInstance() {

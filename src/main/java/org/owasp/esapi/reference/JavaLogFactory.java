@@ -30,7 +30,7 @@ public class JavaLogFactory implements LogFactory {
     /**
      * Acquires the singleton reference to this type.
      * @return instance.
-     * @deprecated Use {@link ObjFactory#make(JavaLogFactory.class.getName(), String)} instead
+     * @deprecated Use {@link ObjFactory#make(String, String)} instead
      */
     @Deprecated
     public static LogFactory getInstance() {

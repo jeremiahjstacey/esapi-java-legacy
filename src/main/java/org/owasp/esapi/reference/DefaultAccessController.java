@@ -18,7 +18,7 @@ public class DefaultAccessController implements AccessController {
 	 /**
      * Acquires the singleton reference to this type.
      * @return instance.
-     * @deprecated Use {@link ObjFactory#make(DefaultAccessController.class.getName(), String)} instead
+     * @deprecated Use {@link ObjFactory#make(String, String)} instead
      */
     @Deprecated
     public static AccessController getInstance() {
