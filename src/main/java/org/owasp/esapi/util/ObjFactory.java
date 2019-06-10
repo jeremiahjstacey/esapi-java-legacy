@@ -26,11 +26,11 @@ import org.owasp.esapi.errors.ConfigurationException;
  * 		...
  * 		// Typically these would be populated from some Java properties file
  * 		String barName = "com.example.foo.Bar";
- * 		String beerBrand = "com.example.brewery.Guiness";
+ * 		String beerBrand = "com.example.brewery.Guinness";
  * 		...
  * 		DrinkingEstablishment bar = ObjFactory.make(barName, "DrinkingEstablishment");
  * 		Beer beer = ObjFactory.make(beerBrand, "Beer");
- *		bar.drink(beer);	// Drink a Guiness beer at the foo Bar. :)
+ *		bar.drink(beer);	// Drink a Guinness beer at the foo Bar. :)
  *		...
  * </pre>
  * </p><p>
