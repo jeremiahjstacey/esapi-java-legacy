@@ -47,7 +47,6 @@ import org.owasp.esapi.errors.ValidationAvailabilityException;
 import org.owasp.esapi.errors.ValidationException;
 import org.owasp.esapi.reference.validation.CreditCardValidationRule;
 import org.owasp.esapi.reference.validation.DateValidationRule;
-import org.owasp.esapi.reference.validation.HTMLValidationRule;
 import org.owasp.esapi.reference.validation.IntegerValidationRule;
 import org.owasp.esapi.reference.validation.NumberValidationRule;
 import org.owasp.esapi.reference.validation.StringValidationRule;
@@ -343,10 +342,8 @@ public class DefaultValidator implements org.owasp.esapi.Validator {
 	 * This implementation relies on the OWASP AntiSamy project.
 	 */
 	public String getValidSafeHTML( String context, String input, int maxLength, boolean allowNull ) throws ValidationException, IntrusionException {
-		HTMLValidationRule hvr = new HTMLValidationRule( "safehtml", encoder );
-		hvr.setMaximumLength(maxLength);
-		hvr.setAllowNull(allowNull);
-		return hvr.getValid(context, input);
+	    SafeHTMLValidationHandler safeHtmlHandler = new SafeHTMLValidationHandler();
+	    return safeHtmlHandler.getValidSafeHTML(context, input, encoder, maxLength, allowNull);
 	}
 
 	/**
