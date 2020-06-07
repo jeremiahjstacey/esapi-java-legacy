@@ -20,8 +20,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -213,15 +211,6 @@ public class DefaultSecurityConfiguration implements SecurityConfiguration {
     private static final Map<String, Pattern> patternCache = new HashMap<String, Pattern>();
 
     /*
-     * Absolute path to the user.home. No longer includes the ESAPI portion as it used to.
-     */
-    private static final String userHome = System.getProperty("user.home" );
-    /*
-     * Absolute path to the customDirectory
-     */	// DISCUSS: Implicit assumption here that there is no SecurityManager installed enforcing the
-        //			prevention of reading system properties. Otherwise this will fail with SecurityException.
-    private static String customDirectory = System.getProperty("org.owasp.esapi.resources");
-    /*
      * Relative path to the resourceDirectory. Relative to the classpath.
      * Specifically, ClassLoader.getResource(resourceDirectory + filename) will
      * be used to load the file.
@@ -229,6 +218,10 @@ public class DefaultSecurityConfiguration implements SecurityConfiguration {
     private String resourceDirectory = ".esapi";	// For backward compatibility (vs. "esapi")
 	private final String resourceFile;
     private EsapiPropertyManager esapiPropertyManager;
+    
+    private  List<ResourceProvider> fileProviders = new ArrayList<>();
+    private  List<ResourceProvider> streamProviders = new ArrayList<>();
+    
 
 //    private static long lastModified = -1;
 
@@ -239,6 +232,27 @@ public class DefaultSecurityConfiguration implements SecurityConfiguration {
      */
     DefaultSecurityConfiguration(String resourceFile) {
     	this.resourceFile = resourceFile;
+    	 ResourceProvider securityConfigurationProvider = new ResourceProvider() {
+             @Override
+             public File getFile(String filename) {
+                 return resourceDirectory == null ? null : new File (resourceDirectory, filename);
+             }
+             @Override
+             public InputStream getResourceAsStream(ClassLoader loader, String filename) {
+                return loader.getResourceAsStream(resourceDirectory + "/" + filename);
+             }
+         };
+    	fileProviders.add(securityConfigurationProvider);
+        fileProviders.add(ResourceLoader.ROOT);
+        fileProviders.add(ResourceLoader.CUSTOM_DIRECTORY);
+        fileProviders.add(ResourceLoader.ESAPI_DIRECTORY);
+        fileProviders.add(ResourceLoader.DOT_ESAPI_DIRECTORY);
+        fileProviders.add(ResourceLoader.USER_HOME_DIR);
+        
+        for (ResourceLoader loader : ResourceLoader.values()) {
+            streamProviders.add(loader);
+        }
+    	
     	// load security configuration
     	try {
             this.esapiPropertyManager = new EsapiPropertyManager();
@@ -551,175 +565,90 @@ public class DefaultSecurityConfiguration implements SecurityConfiguration {
 		throw new FileNotFoundException();
 	}
 	
-	/**
-	 * {@inheritDoc}
-	 */
-	public File getResourceFile(String filename) {
-		logSpecial("Attempting to load " + filename + " as resource file via file I/O.");
 
-		if (filename == null) {
-			logSpecial("Failed to load properties via FileIO. Filename is null.");
-			return null; // not found.
-		}
+/**
+     * {@inheritDoc}
+     */
+    public File getResourceFile(String filename) {
+        logSpecial("Attempting to load " + filename + " as resource file via file I/O.");
 
-		File f = null;
-
-		// first, allow command line overrides. -Dorg.owasp.esapi.resources
-		// directory
-		f = new File(customDirectory, filename);
-		if (customDirectory != null && f.canRead()) {
-			logSpecial("Found in 'org.owasp.esapi.resources' directory: " + f.getAbsolutePath());
-			return f;
-		} else {
-			logSpecial("Not found in 'org.owasp.esapi.resources' directory or file not readable: " + f.getAbsolutePath());
-		}
-
-		// if not found, then try the programmatically set resource directory
-		// (this defaults to SystemResource directory/resourceFile
-		URL fileUrl = ClassLoader.getSystemResource(resourceDirectory + "/" + filename);
-        if ( fileUrl == null ) {
-            fileUrl = ClassLoader.getSystemResource("esapi/" + filename);
+        if (filename == null || filename.isEmpty()) {
+            logSpecial("Failed to load properties via FileIO. Filename is not provided.");
+            return null; // not found.
         }
-
-		if (fileUrl != null) {
-			try {
-				String fileLocation = fileUrl.toURI().getPath();
-				f = new File(fileLocation);
-				if (f.exists()) {
-					logSpecial("Found in SystemResource Directory/resourceDirectory: " + f.getAbsolutePath());
-					return f;
-				} else {
-					logSpecial("Not found in SystemResource Directory/resourceDirectory (this should never happen): " + f.getAbsolutePath());
-				}
-			} catch (URISyntaxException e) {
-				logSpecial("Error while converting URL " + fileUrl + " to file path: " + e.getMessage());
-			}
-		} else {
-			logSpecial("Not found in SystemResource Directory/resourceDirectory: " + resourceDirectory + File.separator + filename);
-		}
-
-		// If not found, then try immediately under user's home directory first in
-		//		userHome + "/.esapi"		and secondly under
-		//		userHome + "/esapi"
-		// We look in that order because of backward compatibility issues.
-		String homeDir = userHome;
-		if ( homeDir == null ) {
-			homeDir = "";	// Without this,	homeDir + "/.esapi"	would produce
-							// the string		"null/.esapi"		which surely is not intended.
-		}
-		// First look under ".esapi" (for reasons of backward compatibility).
-		f = new File(homeDir + "/.esapi", filename);
-		if ( f.canRead() ) {
-			logSpecial("[Compatibility] Found in 'user.home' directory: " + f.getAbsolutePath());
-			return f;
-		} else {
-			// Didn't find it under old directory ".esapi" so now look under the "esapi" directory.
-			f = new File(homeDir + "/esapi", filename);
-			if ( f.canRead() ) {
-				logSpecial("Found in 'user.home' directory: " + f.getAbsolutePath());
-				return f;
-			} else {
-				logSpecial("Not found in 'user.home' (" + homeDir + ") directory: " + f.getAbsolutePath());
-			}
-		}
-
-		// return null if not found
-		return null;
-	}
-	
+      
+        Iterator<ResourceProvider> fpItr = fileProviders.iterator();
+        File rval = null;
+        
+        while (rval == null && fpItr.hasNext()) {
+            ResourceProvider provider = fpItr.next();
+            File fileRef = provider.getFile(filename);
+            if (fileRef != null && fileRef.canRead()) {
+                logSpecial("File Found: " + fileRef.getAbsolutePath());
+                rval = fileRef;
+                break;
+            }
+            
+        }
+    
+        return rval;
+    }
+    
+     /**
+     * Used to load ESAPI.properties from a variety of different classpath locations.
+     *
+     * @param fileName The properties file filename.
+     */
+    private Properties loadConfigurationFromClasspath(String context, ClassLoader classLoader, String fileName) {
+        Properties rval = null;
+        for (ResourceProvider provider : streamProviders) {
+            try (InputStream stream = provider.getResourceAsStream(classLoader, fileName)) {
+                if (stream != null) {
+                    rval = new Properties();
+                    rval.load(stream); // Can throw IOException
+                    logSpecial("SUCCESSFULLY LOADED " + fileName + " via the CLASSPATH using  " + context + "!");
+                    break;
+                }
+            } catch (IOException e) {
+                rval = null;
+            }
+        }
+        return rval;
+    }
     /**
      * Used to load ESAPI.properties from a variety of different classpath locations.
      *
      * @param fileName The properties file filename.
      */
-	private Properties loadConfigurationFromClasspath(String fileName) throws IllegalArgumentException {
-		Properties result = null;
-		InputStream in = null;
+    private Properties loadConfigurationFromClasspath(String fileName) throws IllegalArgumentException {
+        Properties result = null;
+        
+        ClassLoader[] loaders = new ClassLoader[] {
+                Thread.currentThread().getContextClassLoader(),
+                ClassLoader.getSystemClassLoader(),
+                getClass().getClassLoader() 
+        };
+        String[] classLoaderNames = {
+                "current thread context class loader",
+                "system class loader",
+                "class loader for DefaultSecurityConfiguration class"
+        };
 
-		ClassLoader[] loaders = new ClassLoader[] {
-				Thread.currentThread().getContextClassLoader(),
-				ClassLoader.getSystemClassLoader(),
-				getClass().getClassLoader() 
-		};
-		String[] classLoaderNames = {
-				"current thread context class loader",
-				"system class loader",
-				"class loader for DefaultSecurityConfiguration class"
-		};
+        for (int i = 0; i < loaders.length; i++) {
+            result  = loadConfigurationFromClasspath(classLoaderNames[i], loaders[i], fileName);
+            if (result != null) {
+                break;
+            }
+        }
 
-		ClassLoader currentLoader = null;
-		for (int i = 0; i < loaders.length; i++) {
-			if (loaders[i] != null) {
-				currentLoader = loaders[i];
-				try {
-					// try root
-					String currentClasspathSearchLocation = "/ (root)";
-                        // Note: do NOT add '/' anywhere here even though root value is empty string!
-                        // Note that since DefaultSearchPath.ROOT.value() is now "" (the empty string),
-                        // then this is logically equivalent to what we used to have, which was:
-                        //
-						//      in = loaders[i].getResourceAsStream(fileName);
-                        //
-					in = loaders[i].getResourceAsStream(DefaultSearchPath.ROOT.value() + fileName);
-					
-					// try resourceDirectory folder
-					if (in == null) {
-						currentClasspathSearchLocation = resourceDirectory + "/";
-						in = currentLoader.getResourceAsStream(DefaultSearchPath.RESOURCE_DIRECTORY.value() + fileName);
-					}
+        if (result == null) {
+            // CHECKME: This is odd...why not ConfigurationException?
+            throw new IllegalArgumentException("Failed to load " + resourceFile + " as a classloader resource.");
+        }
 
-					// try .esapi folder. Look here first for backward compatibility.
-					if (in == null) {
-						currentClasspathSearchLocation = ".esapi/";
-						in = currentLoader.getResourceAsStream(DefaultSearchPath.DOT_ESAPI.value() + fileName);
-					} 
-					
-					// try esapi folder (new directory)
-					if (in == null) {
-						currentClasspathSearchLocation = "esapi/";
-						in = currentLoader.getResourceAsStream(DefaultSearchPath.ESAPI.value() + fileName);
-					} 
-					
-					// try resources folder
-					if (in == null) {
-						currentClasspathSearchLocation = "resources/";
-						in = currentLoader.getResourceAsStream(DefaultSearchPath.RESOURCES.value() + fileName);
-					}
-					
-					// try src/main/resources folder
-					if (in == null) {
-						currentClasspathSearchLocation = "src/main/resources/";
-						in = currentLoader.getResourceAsStream(DefaultSearchPath.SRC_MAIN_RESOURCES.value() + fileName);
-					}
-		
-					// now load the properties
-					if (in != null) {
-						result = new Properties();
-						result.load(in); // Can throw IOException
-						logSpecial("SUCCESSFULLY LOADED " + fileName + " via the CLASSPATH from '" +
-								currentClasspathSearchLocation + "' using " + classLoaderNames[i] + "!");
-						break;	// Outta here since we've found and loaded it.
-					}
-				} catch (Exception e) {
-					result = null;
-		
-				} finally {
-					try {
-						in.close();
-					} catch (Exception e) {
-					}
-				}
-			}
-		}
-
-		if (result == null) {
-			// CHECKME: This is odd...why not ConfigurationException?
-		    throw new IllegalArgumentException("Failed to load " + resourceFile + " as a classloader resource.");
-		}
-
-		return result;
-	}
-
+        return result;
+    }
+    
     /**
      * Log to standard output (i.e., {@code System.out}. This method is
      * synchronized to reduce the possibility of interleaving the message
@@ -1399,25 +1328,5 @@ public class DefaultSecurityConfiguration implements SecurityConfiguration {
 
     protected Properties getESAPIProperties() {
         return properties;
-    }
-    
-    public enum DefaultSearchPath {
-    	
-    	RESOURCE_DIRECTORY("resourceDirectory/"),
-    	SRC_MAIN_RESOURCES("src/main/resources/"),
-    	ROOT(""),
-    	DOT_ESAPI(".esapi/"),
-    	ESAPI("esapi/"),
-    	RESOURCES("resources/");
-    	
-    	private final String path;
-    	
-    	private DefaultSearchPath(String s){
-    		this.path = s;
-    	}
-    	
-    	public String value(){
-    		return path;
-    	}
     }
 }

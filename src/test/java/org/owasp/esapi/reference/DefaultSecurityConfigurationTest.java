@@ -7,17 +7,30 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.Logger;
 import org.owasp.esapi.SecurityConfiguration;
 import org.owasp.esapi.errors.ConfigurationException;
-import org.owasp.esapi.reference.DefaultSecurityConfiguration.DefaultSearchPath;
+import org.powermock.reflect.Whitebox;
 
 public class DefaultSecurityConfigurationTest {
-
+    @Rule
+    public TemporaryFolder testScopeConfig= new TemporaryFolder();
+    
 	private DefaultSecurityConfiguration createWithProperty(String key, String val) {
 		java.util.Properties properties = new java.util.Properties();
 		properties.setProperty(key, val);
@@ -470,23 +483,6 @@ public class DefaultSecurityConfigurationTest {
 		assertEquals(patternOrNull(secConf.getValidationPattern("TestC")), "ValueFromCommaFile");
 	}
 	
-	@Test 
-	public void DefaultSearchPathTest(){
-		assertEquals("", DefaultSearchPath.ROOT.value());
-		assertEquals("resourceDirectory/", DefaultSearchPath.RESOURCE_DIRECTORY.value());
-		assertEquals(".esapi/", DefaultSearchPath.DOT_ESAPI.value());
-		assertEquals("esapi/", DefaultSearchPath.ESAPI.value());
-		assertEquals("resources/", DefaultSearchPath.RESOURCES.value());
-		assertEquals("src/main/resources/", DefaultSearchPath.SRC_MAIN_RESOURCES.value());
-	}
-	
-	@Test
-	public void DefaultSearchPathEnumChanges(){
-		int expected = 6;
-		int testValue = DefaultSearchPath.values().length;
-		assertEquals(expected, testValue);
-	}
-	
 	@Test
 	public void defaultPropertiesTest(){
 		SecurityConfiguration sc = ESAPI.securityConfiguration();
@@ -538,5 +534,100 @@ public class DefaultSecurityConfigurationTest {
                       ESAPI.securityConfiguration().getBooleanProp( DefaultSecurityConfiguration.DISABLE_INTRUSION_DETECTION )
                   );
         // TODO: add some more tests here for the deprecated replacements.
+    }
+    
+    @Test
+    public void checkFileProviderConfigurations() {
+        Object o = Whitebox.getInternalState(ESAPI.securityConfiguration(), "fileProviders");
+        @SuppressWarnings("unchecked")
+        List<ResourceProvider> configs = (List<ResourceProvider>) o;
+        
+        assertEquals(6, configs.size());
+        //This is the one that uses the security configuration resource directory.
+        assertNotNull(configs.get(0));
+        
+        assertEquals(ResourceLoader.ROOT, configs.get(1));
+        assertEquals(ResourceLoader.CUSTOM_DIRECTORY, configs.get(2));
+        assertEquals(ResourceLoader.ESAPI_DIRECTORY, configs.get(3));
+        assertEquals(ResourceLoader.DOT_ESAPI_DIRECTORY, configs.get(4));
+        assertEquals(ResourceLoader.USER_HOME_DIR, configs.get(5));
+    }
+
+    @Test
+    public void testGetFileResource() throws IOException {
+        Object original = Whitebox.getInternalState(ESAPI.securityConfiguration(), "fileProviders");
+        try {
+            ResourceProvider mockProvider = Mockito.mock(ResourceProvider.class);
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "fileProviders", Arrays.asList(mockProvider));
+            String fileName = "myFile";
+            File tempFile = testScopeConfig.newFile();
+            Mockito.when(mockProvider.getFile(fileName)).thenReturn(tempFile);
+
+            File found = ESAPI.securityConfiguration().getResourceFile(fileName);
+            assertEquals(tempFile, found);
+
+            Mockito.verify(mockProvider, VerificationModeFactory.times(1)).getFile(fileName);
+        } finally {
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "fileProviders", original);
+        }
+
+    }
+
+    @Test
+    public void testGetFileStreamResource() throws IOException {
+        Object original = Whitebox.getInternalState(ESAPI.securityConfiguration(), "fileProviders");
+        try {
+            ResourceProvider mockProvider = Mockito.mock(ResourceProvider.class);
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "fileProviders", Arrays.asList(mockProvider));
+            String fileName = "myFile";
+            File tempFile = testScopeConfig.newFile();
+            Mockito.when(mockProvider.getFile(fileName)).thenReturn(tempFile);
+
+            InputStream inStrm = ESAPI.securityConfiguration().getResourceStream(fileName);
+
+            assertNotNull(inStrm);
+            Mockito.verify(mockProvider, VerificationModeFactory.times(1)).getFile(fileName);
+        } finally {
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "fileProviders", original);
+        }
+    }
+
+    @Test
+    public void checkStreamProviderConfigurations() {
+        Object o = Whitebox.getInternalState(ESAPI.securityConfiguration(), "streamProviders");
+        @SuppressWarnings("unchecked")
+        List<ResourceProvider> configs = (List<ResourceProvider>) o;
+
+        assertEquals(ResourceLoader.values().length, configs.size());
+
+        for (ResourceLoader loader : ResourceLoader.values()) {
+            assertTrue(configs.contains(loader));
+        }
+    }
+
+    @Test
+    public void testConfigurationStreamResource() throws IOException {
+        Object original = Whitebox.getInternalState(ESAPI.securityConfiguration(), "streamProviders");
+        Object originalFP = Whitebox.getInternalState(ESAPI.securityConfiguration(), "fileProviders");
+        Object originalResourceDir = Whitebox.getInternalState(ESAPI.securityConfiguration(), "resourceDirectory");
+        try {
+            ResourceProvider mockProvider = Mockito.mock(ResourceProvider.class);
+            //This must return null to force the classpath check
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "fileProviders", Arrays.asList(mockProvider));
+            Mockito.when(mockProvider.getFile(ArgumentMatchers.anyString())).thenReturn(null);
+
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "streamProviders", Arrays.asList(mockProvider));
+            File stubProperties = testScopeConfig.newFile("bogus.properties");
+            Mockito.when(mockProvider.getResourceAsStream(ArgumentMatchers.any(ClassLoader.class), ArgumentMatchers.anyString())).thenReturn(new FileInputStream(stubProperties));
+
+            //This triggers a reload of the resources, which will call the stream providers.
+            ESAPI.securityConfiguration().setResourceDirectory(testScopeConfig.getRoot().getAbsolutePath());
+
+            Mockito.verify(mockProvider, VerificationModeFactory.atLeastOnce()).getResourceAsStream(ArgumentMatchers.any(ClassLoader.class), ArgumentMatchers.anyString());
+        } finally {
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "streamProviders", original);
+            Whitebox.setInternalState(ESAPI.securityConfiguration(), "fileProviders", originalFP);
+            ESAPI.securityConfiguration().setResourceDirectory(originalResourceDir.toString());
+        }
     }
 }
