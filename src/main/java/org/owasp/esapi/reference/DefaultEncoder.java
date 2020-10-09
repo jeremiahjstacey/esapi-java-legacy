@@ -119,8 +119,8 @@ public class DefaultEncoder implements Encoder {
 	 * Instantiates a new DefaultEncoder
 	 */
 	private DefaultEncoder() {
-	   // codecs.add( new DefaultCodecWrapper(IMMUNE_HTML, htmlCodec) );
-	    //codecs.add( new DefaultCodecWrapper(new char[0], percentCodec) );
+	    codecs.add( new DefaultCodecWrapper(IMMUNE_HTML, htmlCodec) );
+	    codecs.add( new DefaultCodecWrapper(new char[0], percentCodec) );
 	    codecs.add( new DefaultCodecWrapper(IMMUNE_JAVASCRIPT, javaScriptCodec) );
 	}
 	
