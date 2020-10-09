@@ -72,7 +72,8 @@ public class DefaultEncoder implements Encoder {
     }
 
 	// Codecs
-	private List codecs = new ArrayList();
+	//private List codecs = new ArrayList();
+    private List<DefaultCodecWrapper> codecs = new ArrayList<DefaultEncoder.DefaultCodecWrapper>();
 	private HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
 	private XMLEntityCodec xmlCodec = new XMLEntityCodec();
 	private PercentCodec percentCodec = new PercentCodec();
@@ -97,21 +98,37 @@ public class DefaultEncoder implements Encoder {
 	private final static char[] IMMUNE_XMLATTR = { ',', '.', '-', '_' };
 	private final static char[] IMMUNE_XPATH = { ',', '.', '-', '_', ' ' };
 	
+	private static class DefaultCodecWrapper {
+	    private final char[] immune;
+	    private final Codec delegate;
+	    
+	    public DefaultCodecWrapper(char[] immuneList, Codec delegate) {
+	        this.immune = immuneList;
+	        this.delegate = delegate;
+	    }
+	    
+	    public String decode(String input) {
+	        return delegate.decode(input);
+	    }
+	    public String encode(String input) {
+	        return delegate.encode(immune, input);
+	    }
+	}
 	
 	/**
 	 * Instantiates a new DefaultEncoder
 	 */
 	private DefaultEncoder() {
-		codecs.add( htmlCodec );
-		codecs.add( percentCodec );
-		codecs.add( javaScriptCodec );
+	   // codecs.add( new DefaultCodecWrapper(IMMUNE_HTML, htmlCodec) );
+	    //codecs.add( new DefaultCodecWrapper(new char[0], percentCodec) );
+	    codecs.add( new DefaultCodecWrapper(IMMUNE_JAVASCRIPT, javaScriptCodec) );
 	}
 	
 	public DefaultEncoder( List<String> codecNames ) {
 		for ( String clazz : codecNames ) {
 			try {
 				if ( clazz.indexOf( '.' ) == -1 ) clazz = "org.owasp.esapi.codecs." + clazz;
-				codecs.add( Class.forName( clazz ).newInstance() );
+			//	codecs.add( Class.forName( clazz ).newInstance() );
 			} catch ( Exception e ) {
 				logger.warning( Logger.EVENT_FAILURE, "Codec " + clazz + " listed in ESAPI.properties not on classpath" );
 			}
@@ -150,7 +167,7 @@ public class DefaultEncoder implements Encoder {
 		}
 		
         String working = input;
-        Codec codecFound = null;
+        DefaultCodecWrapper codecFound = null;
         int mixedCount = 1;
         int foundCount = 0;
         boolean clean = false;
@@ -158,9 +175,9 @@ public class DefaultEncoder implements Encoder {
             clean = true;
             
             // try each codec and keep track of which ones work
-            Iterator i = codecs.iterator();
+            Iterator<DefaultCodecWrapper> i = codecs.iterator();
             while ( i.hasNext() ) {
-                Codec codec = (Codec)i.next();
+                DefaultCodecWrapper codec = i.next();
                 String old = working;
                 working = codec.decode( working );
                 if ( !old.equals( working ) ) {
@@ -168,8 +185,14 @@ public class DefaultEncoder implements Encoder {
                         mixedCount++;
                     }
                     codecFound = codec;
-                    if ( clean ) {
-                        foundCount++;
+                    if ( clean) {
+                       // System.out.println(String.format("%s:%s  -> [ %s ] (%s)",codec.delegate.getClass().getSimpleName(), foundCount++ +1,  working, input));
+                        if (old.equals(codec.encode(working))){
+                            foundCount++;
+                        } else {
+                            System.out.println("Could not reproduce original content.");
+                        }
+                        
                     }
                     clean = false;
                 }

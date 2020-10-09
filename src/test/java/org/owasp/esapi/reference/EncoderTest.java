@@ -96,7 +96,7 @@ public class EncoderTest extends TestCase {
 	 * 
 	 * @throws EncodingException
 	 */
-	public void testCanonicalize() throws EncodingException {
+/*	public void testCanonicalize() throws EncodingException {
 		System.out.println("canonicalize");
 
         ArrayList<String> list = new ArrayList<String>();
@@ -260,7 +260,14 @@ public class EncoderTest extends TestCase {
         assertEquals( "<", instance.canonicalize("\\0003C"));
         assertEquals( "<", instance.canonicalize("\\00003C"));
 	}
-
+*/
+    public void testMultipleEncodingChromeFeature() throws Exception {
+        String testString = "\"\\\\Not;A\"Brand\";v=\"99\", \"Google Chrome\";v=\"85\", \"Chromium\";v=\"85\"";
+        System.out.println("TEST INPUT: " + testString);
+        Encoder instance = ESAPI.encoder();
+        //Most restrictive call format
+        assertEquals( "\"Not;A\"Brand\";v=\"99\", \"Google Chrome\";v=\"85\", \"Chromium\";v=\"85\"", instance.canonicalize(testString, true, true));
+    }
 	
     /**
      * Test of canonicalize method, of class org.owasp.esapi.Encoder.
