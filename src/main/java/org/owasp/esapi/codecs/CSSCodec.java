@@ -29,6 +29,7 @@ import org.owasp.esapi.codecs.ref.EncodingPatternPreservation;
  */
 public class CSSCodec extends AbstractCharacterCodec
 {
+    public final static char[] IMMUNE_CSS = { '#' }; 
 	private static final Character REPLACEMENT = '\ufffd';
 	//rgb (###,###,###) OR rgb(###%,###%,###%)
 	//([rR][gG][bB])\s*\(\s*\d{1,3}\s*(\%)?\s*,\s*\d{1,3}\s*(\%)?\s*,\s*\d{1,3}\s*(\%)?\s*\)
@@ -44,6 +45,10 @@ public class CSSCodec extends AbstractCharacterCodec
 		 String result = super.encode(immune, inputChk);
 		 
 		 return tripletCheck.restoreOriginalContent(result);
+	}
+	@Override
+	public char[] getDefaultImmuneList() {
+	   return IMMUNE_CSS;
 	}
     /**
 	 * {@inheritDoc}

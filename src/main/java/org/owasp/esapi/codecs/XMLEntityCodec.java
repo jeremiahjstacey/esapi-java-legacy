@@ -43,10 +43,24 @@ import org.owasp.esapi.util.CollectionsUtil;
  */
 public class XMLEntityCodec extends AbstractCharacterCodec
 {
+    private enum XMLCodecMode {
+        XML(new char[] {',', '.', '-', '_', ' '}),
+        XML_ATTR (new char[] {',', '.', '-', '_'});
+        
+        final char[] defaultImmunity;
+        private XMLCodecMode(char[] immunities) {
+            this.defaultImmunity = immunities;
+        }
+        public char[] getDefaultImmunities() {
+            return defaultImmunity;
+        }
+    }
+      
 	private static final String ALPHA_NUMERIC_STR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	private static final String UNENCODED_STR = ALPHA_NUMERIC_STR + " \t";
 	private static final Set<Character> UNENCODED_SET = CollectionsUtil.strToUnmodifiableSet(UNENCODED_STR);
 	private static final HashTrie<Character> entityToCharacterMap;
+	
 
 	static
 	{	// populate entitites
@@ -57,7 +71,21 @@ public class XMLEntityCodec extends AbstractCharacterCodec
 		entityToCharacterMap.put("apos", '\'');
 		entityToCharacterMap.put("quot", '"');
 	}
-
+	
+	private XMLCodecMode mode = XMLCodecMode.XML;
+	
+	public void setToXML() {
+	    mode= XMLCodecMode.XML;
+	}
+	
+	public void setToXMLAttribute() {
+	    mode = XMLCodecMode.XML_ATTR;
+	}
+	
+	@Override
+	public char[] getDefaultImmuneList() {
+	    return mode.getDefaultImmunities();
+	}
 	/**
 	 * {@inheritDoc}
 	 * 

@@ -19,8 +19,8 @@
  */
 package org.owasp.esapi.codecs;
 
-import java.util.HashMap;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -37,12 +37,26 @@ import java.util.Map.Entry;
  */
 public class HTMLEntityCodec extends AbstractIntegerCodec
 {
+    private enum HTMLCodecMode {
+        HTML(new char[] { ',', '.', '-', '_', ' '}),
+        HTML_ATTRIBUTE(new char[] { ',', '.', '-', '_' }), 
+        HTML_XPATH(new char[] {',', '.', '-', '_', ' '});
+        
+        final char[] defaultImmunity;
+        private HTMLCodecMode(char[] immunities) {
+            this.defaultImmunity = immunities;
+        }
+        public char[] getDefaultImmunities() {
+            return defaultImmunity;
+        }
+    }
 	private static final char REPLACEMENT_CHAR = '\ufffd';
 	private static final String REPLACEMENT_HEX = "fffd";
 	private static final String REPLACEMENT_STR = "" + REPLACEMENT_CHAR;
 	private static final Map<Integer,String> characterToEntityMap = mkCharacterToEntityMap();
 
 	private static final Trie<Integer> entityToCharacterTrie = mkEntityToCharacterTrie();
+	private HTMLCodecMode mode = HTMLCodecMode.HTML;
 
     /**
      *
@@ -50,6 +64,21 @@ public class HTMLEntityCodec extends AbstractIntegerCodec
     public HTMLEntityCodec() {
 	}
 
+    
+    public void setToHTML() {
+        mode= HTMLCodecMode.HTML;
+    }
+    public void setToHTMLAttribute() {
+        mode = HTMLCodecMode.HTML_ATTRIBUTE;
+    }
+    public void setToXpath() {
+        mode = HTMLCodecMode.HTML_XPATH;
+    }
+    
+    @Override
+    public char[] getDefaultImmuneList() {
+        return mode.getDefaultImmunities();
+    }
     /**
      * Given an array of {@code char}, scan the input {@code String} and encode unsafe
      * codePoints, except for codePoints passed into the {@code char} array.  

@@ -27,7 +27,13 @@ import org.owasp.esapi.EncoderConstants;
  * @see org.owasp.esapi.Encoder
  */
 public class VBScriptCodec extends AbstractCharacterCodec {
-
+    private final static char[] IMMUNE_VBSCRIPT = { ',', '.', '_' };
+    
+    @Override
+    public char[] getDefaultImmuneList() {
+        return IMMUNE_VBSCRIPT;
+    }
+    
 	/**
 	 * Encode a String so that it can be safely used in a specific context.
 	 * 

@@ -26,7 +26,12 @@ package org.owasp.esapi.codecs;
  */
 public class JavaScriptCodec extends AbstractCharacterCodec {
 
+    public final static char[] IMMUNE_JAVASCRIPT = { ',', '.', '_' };
 
+    @Override
+    public char[] getDefaultImmuneList() {
+     return IMMUNE_JAVASCRIPT;
+    }
 	/**
 	 * {@inheritDoc}
 	 * 

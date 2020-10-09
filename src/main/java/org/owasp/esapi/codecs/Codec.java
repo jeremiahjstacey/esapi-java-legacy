@@ -32,6 +32,38 @@ package org.owasp.esapi.codecs;
  * @see org.owasp.esapi.Encoder
  */
 public interface Codec<T> {
+    public char[] getDefaultImmuneList();
+    
+    /**
+     * Encode a String so that it can be safely used in a specific context.  Codec default immune character set is applied
+     * 
+     * @param input
+     *      the String to encode
+     * @return the encoded String
+     */
+    public String encode(String input);
+
+    /**
+     * Default implementation that should be overridden in specific codecs. Codec default immune character set is applied
+     * 
+     * @param c
+     *      the Character to encode
+     * @return
+     *      the encoded Character
+     */
+    public String encodeCharacter( Character c );
+    
+    /**
+     * Default codepoint implementation that should be overridden in specific codecs. Codec default immune character set is applied
+     * 
+     * @param codePoint
+     *      the integer to encode
+     * @return
+     *      the encoded Character
+     */
+    public String encodeCharacter( int codePoint );
+
+    
 	/**
 	 * Encode a String so that it can be safely used in a specific context.
 	 * 

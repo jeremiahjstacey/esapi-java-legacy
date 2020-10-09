@@ -73,9 +73,8 @@ public class DefaultEncoder implements Encoder {
 
 	// Codecs
 	//private List codecs = new ArrayList();
-    private List<DefaultCodecWrapper> codecs = new ArrayList<DefaultEncoder.DefaultCodecWrapper>();
-	private HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
-	private XMLEntityCodec xmlCodec = new XMLEntityCodec();
+    private List<Codec> codecs = new ArrayList<>();
+    private HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
 	private PercentCodec percentCodec = new PercentCodec();
 	private JavaScriptCodec javaScriptCodec = new JavaScriptCodec();
 	private VBScriptCodec vbScriptCodec = new VBScriptCodec();
@@ -87,16 +86,9 @@ public class DefaultEncoder implements Encoder {
 	 *  Character sets that define characters (in addition to alphanumerics) that are
 	 * immune from encoding in various formats
 	 */
-	private final static char[]     IMMUNE_HTML = { ',', '.', '-', '_', ' ' };
-	private final static char[] IMMUNE_HTMLATTR = { ',', '.', '-', '_' };
-	private final static char[] IMMUNE_CSS = { '#' };
-	private final static char[] IMMUNE_JAVASCRIPT = { ',', '.', '_' };
-	private final static char[] IMMUNE_VBSCRIPT = { ',', '.', '_' };
-	private final static char[] IMMUNE_XML = { ',', '.', '-', '_', ' ' };
 	private final static char[] IMMUNE_SQL = { ' ' };
 	private final static char[] IMMUNE_OS = { '-' };
-	private final static char[] IMMUNE_XMLATTR = { ',', '.', '-', '_' };
-	private final static char[] IMMUNE_XPATH = { ',', '.', '-', '_', ' ' };
+	
 	
 	private static class DefaultCodecWrapper {
 	    private final char[] immune;
@@ -119,16 +111,16 @@ public class DefaultEncoder implements Encoder {
 	 * Instantiates a new DefaultEncoder
 	 */
 	private DefaultEncoder() {
-	    codecs.add( new DefaultCodecWrapper(IMMUNE_HTML, htmlCodec) );
-	    codecs.add( new DefaultCodecWrapper(new char[0], percentCodec) );
-	    codecs.add( new DefaultCodecWrapper(IMMUNE_JAVASCRIPT, javaScriptCodec) );
+	    codecs.add( new HTMLEntityCodec() );
+	    codecs.add( new PercentCodec());
+	    codecs.add( new JavaScriptCodec());
 	}
 	
 	public DefaultEncoder( List<String> codecNames ) {
 		for ( String clazz : codecNames ) {
 			try {
 				if ( clazz.indexOf( '.' ) == -1 ) clazz = "org.owasp.esapi.codecs." + clazz;
-			//	codecs.add( Class.forName( clazz ).newInstance() );
+				codecs.add( (Codec) Class.forName( clazz ).newInstance() );
 			} catch ( Exception e ) {
 				logger.warning( Logger.EVENT_FAILURE, "Codec " + clazz + " listed in ESAPI.properties not on classpath" );
 			}
@@ -167,7 +159,7 @@ public class DefaultEncoder implements Encoder {
 		}
 		
         String working = input;
-        DefaultCodecWrapper codecFound = null;
+        Codec codecFound = null;
         int mixedCount = 1;
         int foundCount = 0;
         boolean clean = false;
@@ -175,9 +167,9 @@ public class DefaultEncoder implements Encoder {
             clean = true;
             
             // try each codec and keep track of which ones work
-            Iterator<DefaultCodecWrapper> i = codecs.iterator();
+            Iterator<Codec> i = codecs.iterator();
             while ( i.hasNext() ) {
-                DefaultCodecWrapper codec = i.next();
+                Codec codec = i.next();
                 String old = working;
                 working = codec.decode( working );
                 if ( !old.equals( working ) ) {
@@ -231,7 +223,7 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;
 	    }
-	    return htmlCodec.encode( IMMUNE_HTML, input);	    
+	    return htmlCodec.encode( input);	    
 	 }
 	
 	/**
@@ -252,7 +244,9 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;
 	    }
-	    return htmlCodec.encode( IMMUNE_HTMLATTR, input);
+	    HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
+        htmlCodec.setToHTMLAttribute();
+	    return htmlCodec.encode( input);
 	}
 
 	
@@ -263,7 +257,7 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;
 	    }
-	    return cssCodec.encode( IMMUNE_CSS, input);
+	    return cssCodec.encode(  input);
 	}
 
 	
@@ -274,7 +268,7 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;
 	    }
-	    return javaScriptCodec.encode(IMMUNE_JAVASCRIPT, input);
+	    return javaScriptCodec.encode(input);
 	}
 
 	/**
@@ -284,7 +278,7 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;
 	    }
-	    return vbScriptCodec.encode(IMMUNE_VBSCRIPT, input);	    
+	    return vbScriptCodec.encode(input);	    
 	}
 
 	
@@ -411,7 +405,9 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;	
 	    }
-	    return htmlCodec.encode( IMMUNE_XPATH, input);
+	    HTMLEntityCodec htmlCodec = new HTMLEntityCodec();
+	    htmlCodec.setToXpath();
+	    return htmlCodec.encode( input);
 	}
 
 	/**
@@ -421,7 +417,8 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;	
 	    }
-	    return xmlCodec.encode( IMMUNE_XML, input);
+	    XMLEntityCodec xmlCodec = new XMLEntityCodec();
+	    return xmlCodec.encode( input);
 	}
 
 	/**
@@ -431,7 +428,9 @@ public class DefaultEncoder implements Encoder {
 	    if( input == null ) {
 	    	return null;	
 	    }
-	    return xmlCodec.encode( IMMUNE_XMLATTR, input);
+	    XMLEntityCodec xmlCodec = new XMLEntityCodec();
+	    xmlCodec.setToXMLAttribute();
+	    return xmlCodec.encode( input);
 	}
 
 	/**

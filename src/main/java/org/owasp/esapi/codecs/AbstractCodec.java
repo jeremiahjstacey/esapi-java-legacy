@@ -50,7 +50,26 @@ public abstract class AbstractCodec<T> implements Codec<T> {
 			}
 		}
 	}
+	
+	@Override
+	public char[] getDefaultImmuneList() {
+	    return new char[] {};
+	}
+	
+	@Override
+	public String encode(String input) {
+	    return encode(getDefaultImmuneList(), input);
+	}
+	
+	@Override
+	public String encodeCharacter(Character c) {
+	    return encodeCharacter(getDefaultImmuneList(), c);
+	}
 
+	@Override
+	public String encodeCharacter(int codePoint) {
+	    return encodeCharacter(getDefaultImmuneList(), codePoint);
+	}
 	/**
 	 * WARNING!!  {@code Character} based Codecs will silently transform code points that are not 
 	 * legal UTF code points into garbage data as they will cast them to {@code char}s.  
