@@ -206,7 +206,7 @@ public interface Logger {
     void setLevel(int level);
     
     /** Retrieve the current ESAPI logging level for this logger. See
-     * {@link org.owasp.esapi.reference.Log4JLogger} for an explanation of
+     * {@link org.owasp.esapi.logging.log4j.Log4JLogger} for an explanation of
      * why this method is not simply called {@code getLevel()}.
      * 
      * @return The current logging level.
@@ -401,6 +401,8 @@ public interface Logger {
 
 	/**
      * Log an event regardless of what logging level is enabled.
+     * <br>
+     * Note that logging will not occur if the underlying logging implementation has logging disabled.
      * 
      * @param type 
      * 		the type of event
@@ -412,6 +414,8 @@ public interface Logger {
 	/**
      * Log an event regardless of what logging level is enabled
      * and also record the stack trace associated with the event.
+     * <br>
+     * Note that logging will not occur if the underlying logging implementation has logging disabled.
      * 
      * @param type 
      * 		the type of event 

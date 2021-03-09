@@ -30,7 +30,6 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 import nu.xom.ValidityException;
 
-import org.apache.log4j.Level;
 import org.owasp.esapi.ESAPI;
 import org.owasp.esapi.waf.ConfigurationException;
 import org.owasp.esapi.waf.rules.AddHTTPOnlyFlagRule;
@@ -94,7 +93,6 @@ public class ConfigurationParser {
 			doc = parser.build(stream);
 			root = doc.getRootElement();
 
-			Element aliasesRoot = root.getFirstChildElement("aliases");
 			Element settingsRoot = root.getFirstChildElement("settings");
 			Element authNRoot = root.getFirstChildElement("authentication-rules");
 			Element authZRoot = root.getFirstChildElement("authorization-rules");
@@ -107,29 +105,10 @@ public class ConfigurationParser {
 			
 			
 			/**
-			 * Parse the 'aliases' section.
-			 */
-			if ( aliasesRoot != null ) {
-				Elements aliases = aliasesRoot.getChildElements("alias");
-	
-				for(int i=0;i<aliases.size();i++) {
-					Element e = aliases.get(i);
-					String name = e.getAttributeValue("name");
-					String type = e.getAttributeValue("type");
-					String value = e.getValue();
-					if ( REGEX.equals(type) ) {
-						config.addAlias(name, Pattern.compile(value));
-					} else {
-						config.addAlias(name, value);
-					}
-				}
-			}
-			
-			/**
 			 * Parse the 'settings' section.
 			 */
 			if ( settingsRoot == null ) {
-				throw new ConfigurationException("", "The <settings> section is required");
+                throw new ConfigurationException("", "The <settings> section is required");
 			} else if ( settingsRoot != null ) {
 				
 				
@@ -161,16 +140,6 @@ public class ConfigurationParser {
 				} catch (Exception e) {
 					config.setDefaultResponseCode( DEFAULT_RESPONSE_CODE );
 				}
-			}
-			
-			/*
-			 * The WAF separate logging is going to be merged in the 2.0
-			 * release, so this is deprecated.
-			 */
-			Element loggingRoot = settingsRoot.getFirstChildElement("logging");
-			if ( loggingRoot != null ) {
-				config.setLogDirectory(loggingRoot.getFirstChildElement("log-directory").getValue());
-				config.setLogLevel(Level.toLevel(loggingRoot.getFirstChildElement("log-level").getValue()));
 			}
 			
 			/**
